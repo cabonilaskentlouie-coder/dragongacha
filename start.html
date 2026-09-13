@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dragon Gacha Legends - summon, evolve, and build your ultimate dragon team.">
+  <title>Dragon Gacha Legends | Welcome</title>
+  <style>
+    :root {
+      --bg: #070d20;
+      --panel: rgba(15, 23, 42, 0.82);
+      --line: rgba(125, 211, 252, 0.24);
+      --text: #f8fafc;
+      --muted: #a8b4cc;
+      --cyan: #38bdf8;
+      --purple: #a78bfa;
+      --gold: #fbbf24;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 15%, rgba(56, 189, 248, 0.2), transparent 30%),
+        radial-gradient(circle at 85% 12%, rgba(167, 139, 250, 0.2), transparent 28%),
+        linear-gradient(145deg, #070d20, #111b38 55%, #0d1530);
+    }
+
+    .page-shell { width: min(1180px, 100%); margin: auto; padding: 28px 20px 42px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-bottom: 28px; }
+    .brand { color: var(--text); font-size: 15px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .version { color: var(--muted); font-size: 12px; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 28px;
+      align-items: center;
+      padding: clamp(24px, 5vw, 62px);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(30, 41, 75, .88), rgba(15, 23, 42, .76));
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .35);
+    }
+
+    .eyebrow { color: var(--cyan); font-size: 12px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    h1 { margin: 10px 0 14px; max-width: 650px; font-size: clamp(38px, 7vw, 76px); line-height: .98; letter-spacing: -.06em; }
+    .hero-copy { max-width: 600px; color: var(--muted); font-size: clamp(15px, 2vw, 18px); line-height: 1.65; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center; min-height: 46px;
+      padding: 0 22px; border-radius: 10px; border: 1px solid transparent;
+      color: #06111f; font-weight: 800; text-decoration: none; cursor: pointer;
+      background: linear-gradient(135deg, #67e8f9, #38bdf8);
+      box-shadow: 0 10px 28px rgba(56, 189, 248, .24);
+    }
+    .button.secondary { color: var(--text); border-color: var(--line); background: rgba(15, 23, 42, .7); box-shadow: none; }
+    .button:hover { transform: translateY(-2px); filter: brightness(1.08); }
+
+    .logo-slot {
+      display: grid; place-items: center; min-height: 280px; padding: 24px;
+      border: 1px dashed rgba(125, 211, 252, .55); border-radius: 20px;
+      background: radial-gradient(circle, rgba(56, 189, 248, .16), transparent 66%);
+      text-align: center;
+    }
+    .logo-slot img { display: block; max-width: 100%; max-height: 250px; object-fit: contain; }
+    .logo-placeholder { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .logo-placeholder strong { display: block; margin-bottom: 8px; color: var(--gold); font-size: 42px; }
+
+    section { margin-top: 34px; }
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 12px; margin-bottom: 14px; }
+    h2 { margin: 0; font-size: 24px; }
+    .section-heading p { margin: 0; color: var(--muted); font-size: 13px; }
+    .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .card {
+      padding: 20px; border: 1px solid rgba(148, 163, 184, .18); border-radius: 14px;
+      background: var(--panel);
+    }
+    .card-icon { font-size: 30px; }
+    .card h3 { margin: 12px 0 7px; font-size: 16px; }
+    .card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .announcement { border-left: 3px solid var(--purple); }
+    .announcement time { color: var(--cyan); font-size: 11px; font-weight: 700; }
+    footer { margin-top: 36px; color: var(--muted); font-size: 12px; text-align: center; }
+
+    @media (max-width: 760px) {
+      .page-shell { padding: 18px 14px 30px; }
+      .topbar { margin-bottom: 18px; }
+      .hero { grid-template-columns: 1fr; padding: 26px 20px; }
+      .logo-slot { min-height: 190px; order: -1; }
+      .card-grid { grid-template-columns: 1fr; }
+      .section-heading { display: block; }
+      .section-heading p { margin-top: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="topbar">
+      <div class="brand">Dragon Gacha Legends</div>
+      <div class="version">Welcome Portal · v1.8</div>
+    </header>
+
+    <section class="hero" aria-labelledby="welcome-title">
+      <div>
+        <div class="eyebrow">Your legend begins here</div>
+        <h1 id="welcome-title">Summon your destiny.</h1>
+        <p class="hero-copy">
+          Collect powerful dragons, discover rare variants, evolve your champions,
+          conquer Adventure stages, and build the ultimate dragon team.
+        </p>
+        <div class="actions">
+          <a class="button" href="gacha1.7dragon.html">Play Dragon Gacha Legends</a>
+          <a class="button secondary" href="#tutorials">How to play</a>
+        </div>
+      </div>
+      <div class="logo-slot">
+        <!-- Replace logo.png with your game logo file in this folder. -->
+        <img src="logo.png" alt="Dragon Gacha Legends logo" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+        <div class="logo-placeholder" hidden>
+          <strong>🐉</strong>
+          Add your logo image as <b>logo.png</b> beside this page.
+        </div>
+      </div>
+    </section>
+
+    <section id="tutorials" aria-labelledby="tutorial-heading">
+      <div class="section-heading">
+        <h2 id="tutorial-heading">Quick Tutorials</h2>
+        <p>Everything you need to start your dragon journey.</p>
+      </div>
+      <div class="card-grid">
+        <article class="card">
+          <div class="card-icon">🥚</div>
+          <h3>1. Summon dragons</h3>
+          <p>Use Gems or festival tickets in the Summon tab to hatch dragons across every rarity.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">⚔️</div>
+          <h3>2. Build your team</h3>
+          <p>Collect copies, combine variants, upgrade skills, and evolve dragons into stronger forms.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🗺️</div>
+          <h3>3. Explore and progress</h3>
+          <p>Clear Adventure stages for permanent exclusive rewards, then challenge the weekly boss raid.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="announcement-heading">
+      <div class="section-heading">
+        <h2 id="announcement-heading">Announcements</h2>
+        <p>Latest news from the Dragon Realms.</p>
+      </div>
+      <div class="card-grid">
+        <article class="card announcement">
+          <time datetime="2026-09-13">September 13, 2026</time>
+          <h3>New dragons have arrived</h3>
+          <p>Meet Zilong, Milim Dragonova, and fourteen other dragons across eight rarity tiers.</p>
+        </article>
+        <article class="card announcement">
+          <time>Hourly Festival</time>
+          <h3>Earn summon tickets</h3>
+          <p>Fill the festival meter every hour to claim Normal, Rare, Legendary, and Element tickets.</p>
+        </article>
+        <article class="card announcement">
+          <time>Adventure Update</time>
+          <h3>Unlock exclusive rewards</h3>
+          <p>Adventure dragons and Exclusive Cosmetics remain yours even after rebirth.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      Ready to enter the realm? <a href="gacha1.7dragon.html" style="color: var(--cyan);">Play now</a>.
+    </footer>
+  </main>
+</body>
+</html>

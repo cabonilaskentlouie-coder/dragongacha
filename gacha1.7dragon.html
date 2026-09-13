@@ -1,0 +1,2833 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ <title>Dragon Gacha Legends v1.8</title>
+ 
+   <link rel="stylesheet" href="dragon.css">
+ 
+</head>
+<body>
+
+ <div class="mobile-container">
+ <div class="hud">
+ <div class="hud-group currency-group">
+ <div class="hud-group-title">Balance</div>
+ <div class="stat-card">
+ <span class="stat-label">Coins</span>
+ <span id="coins-val" class="stat-val" style="color: var(--gold);">100</span>
+ </div>
+ <div class="stat-card">
+ <span class="stat-label">Gems</span>
+ <span id="gems-val" class="stat-val" style="color: var(--accent);">10</span>
+ </div>
+ <div class="stat-card">
+ <span class="stat-label">Tokens</span>
+ <span id="tokens-val" class="stat-val" style="color: var(--paragon);">0</span>
+ </div>
+ </div>
+ <div class="hud-group income-group">
+ <div class="hud-group-title">Per Second</div>
+ <div class="stat-card">
+ <span class="stat-label">CPS</span>
+ <span id="cps-val" class="stat-val" style="color: #22c55e;">0</span>
+ </div>
+ <div class="stat-card">
+ <span class="stat-label">GPS</span>
+ <span id="gps-val" class="stat-val" style="color: var(--paragon);">0</span>
+ </div>
+ </div>
+ </div>
+
+ <!-- Profile Header -->
+ <div class="profile-bar">
+ <div class="profile-info">
+ <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold;">
+ <span id="player-title" style="color: var(--accent);">Novice Tamer</span>
+ <span id="player-badge" style="font-size: 16px;">🌱</span>
+ </div>
+ <div style="font-size: 10px; color: var(--epic); font-weight: bold; margin-top: 2px;" id="player-rebirths">
+ Rebirths: 0
+ </div>
+ </div>
+ </div>
+
+ <!-- Navigation Tabs -->
+ <div class="nav-tabs">
+ <button class="tab-btn active" onclick="switchTab('summon', event)">Summon</button>
+ <button class="tab-btn" onclick="switchTab('summon-log', event)">Summon Log</button>
+ <button class="tab-btn" onclick="switchTab('adventure', event)">Adventure</button>
+ <button class="tab-btn" onclick="switchTab('dragons', event)">Dragons</button>
+ <button class="tab-btn" onclick="switchTab('skills', event)">Skills</button>
+ <button class="tab-btn" onclick="switchTab('artifacts', event)">Relics</button>
+ <button class="tab-btn" onclick="switchTab('upgrades', event)">Upgrades</button>
+ <button class="tab-btn" onclick="switchTab('achievements', event)">Badges</button>
+ <button class="tab-btn" onclick="switchTab('quests', event)">Quests</button>
+ <button class="tab-btn" onclick="switchTab('profile', event)">Profile</button>
+ <button class="tab-btn" onclick="switchTab('shop', event)">Shop</button>
+ <button class="tab-btn" onclick="switchTab('cosmetics', event)">Cosmetics</button>
+ <button class="tab-btn" onclick="switchTab('events', event)">Events</button>
+ </div>
+
+ <div id="view-summon" class="view-panel active">
+ <div class="summon-stage">
+ <div class="egg-icon" id="egg" onclick="clickEgg()">🥚</div>
+ <p id="boost-status" style="font-size: 11px; color: #94a3b8; margin-top: 10px;">Tap egg for coins!</p>
+ </div>
+ <div class="summon-controls">
+ <button class="btn btn-gold" style="flex: 1;" onclick="summon(1)">Summon x1<br>(10 Gems)</button>
+ <button class="btn btn-gold" style="flex: 1;" onclick="summon(10)">Summon x10<br>(100 Gems)</button>
+ </div>
+ <div class="shop-item" style="margin-top: 8px; border-color: var(--accent);">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--accent);">Summon Tickets 🎟️</span>
+ <span class="item-desc">Tickets are earned from completed Hourly Event Festivals and summon without Gems.</span>
+ </div>
+ <div id="summon-ticket-list" style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-end;"></div>
+ </div>
+ <div class="summon-controls" style="margin-top: 8px;">
+ <button class="btn btn-purple" style="flex: 1;" onclick="toggleAutoSummon(10)">Auto x10</button>
+ <button class="btn btn-purple" style="flex: 1;" onclick="toggleAutoSummon(25)">Auto x25</button>
+ <button class="btn btn-purple" style="flex: 1;" onclick="toggleAutoSummon(50)">Auto x50</button>
+ </div>
+ <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+ <button class="btn btn-disabled" id="summon-result-toggle" onclick="toggleSummonResults()">Hide Results + Sound: Off</button>
+ </div>
+ <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px;">
+ <span id="auto-summon-status" style="flex: 1; font-size: 10px; color: #94a3b8;">Auto summon off</span>
+ <button class="btn btn-disabled" id="stop-auto-summon" onclick="stopAutoSummon()" disabled>Stop</button>
+ </div>
+ <div class="shop-item" id="daily-bonus-panel" style="margin-top: 4px; background: #0f172a; border-color: var(--gold);">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--gold);">Daily Blessing 🌟</span>
+ <span class="item-desc" id="daily-bonus-status">Claim your bonus for today</span>
+ </div>
+ <button class="btn btn-gold" id="daily-bonus-btn" onclick="claimDailyBonus()">Claim</button>
+ </div>
+ </div>
+
+ <div id="view-summon-log" class="view-panel">
+ <div class="shop-item" style="border-color: var(--epic);">
+ <div class="item-info"><span class="item-title" style="color: var(--epic);">Summon Pity</span><span class="item-desc" id="pity-status">Rare pity: 0 / 10 · Legendary pity: 0 / 50</span><div class="pity-meter"><div id="pity-rare-fill" class="pity-meter-fill" style="background: var(--rare);"></div></div><div class="pity-meter"><div id="pity-legendary-fill" class="pity-meter-fill" style="background: var(--legendary);"></div></div></div>
+ </div>
+ <div class="shop-item" style="border-color: var(--accent);">
+ <div class="item-info"><span class="item-title" style="color: var(--accent);">Summon History <span id="summon-history-count" style="font-size: 9px; color: #94a3b8;">0 / 50</span></span><span class="item-desc">Search and filter your latest dragon pulls</span><div class="history-toolbar"><input id="history-search" class="dev-input" type="search" placeholder="Search dragon" oninput="renderSummonHistory()"><select id="history-rarity-filter" class="dev-input" onchange="renderSummonHistory()"><option value="all">All rarities</option><option value="common">Common</option><option value="rare">Rare+</option><option value="legendary">Legendary+</option><option value="exclusive">Exclusive</option></select><select id="history-variant-filter" class="dev-input" onchange="renderSummonHistory()"><option value="all">All variants</option><option value="normal">Normal</option><option value="shiny">Shiny</option><option value="gold">Gold</option><option value="diamond">Diamond</option></select></div></div>
+ <button class="btn btn-disabled" onclick="clearSummonHistory()">Clear</button>
+ </div>
+ <div id="summon-history-list" style="display: flex; flex-direction: column; gap: 5px; max-height: 420px; overflow-y: auto;"></div>
+ </div>
+
+ <div id="view-dragons" class="view-panel">
+ <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-bottom: 4px;">Tap owned dragons to sell them for coins!</p>
+ <div class="history-toolbar">
+ <input id="inventory-search" class="dev-input" type="search" placeholder="Search dragons" oninput="renderCollection()">
+ <select id="inventory-rarity-filter" class="dev-input" onchange="renderCollection()"><option value="all">All rarities</option><option value="common">Common</option><option value="rare">Rare+</option><option value="legendary">Legendary+</option><option value="exclusive">Exclusive</option><option value="adventure">Adventure</option></select>
+ <select id="inventory-element-filter" class="dev-input" onchange="renderCollection()"><option value="all">All elements</option></select>
+ <select id="inventory-sort" class="dev-input" onchange="renderCollection()"><option value="rarity">Sort: Rarity</option><option value="name">Sort: Name</option><option value="owned">Sort: Owned</option><option value="cps">Sort: CPS</option></select>
+ </div>
+ <label style="display: flex; align-items: center; gap: 6px; font-size: 10px; color: #cbd5e1;"><input id="inventory-owned-only" type="checkbox" onchange="renderCollection()"> Show owned only</label>
+ <div id="dragon-inventory-summary" style="text-align: center; color: var(--accent); font-size: 12px; font-weight: bold; margin-bottom: 8px;">Total Dragons: 0 | Unlocked: 0 / 0</div>
+ <div id="dragon-collection" class="dragon-grid"></div>
+ </div>
+
+ <div id="view-adventure" class="view-panel">
+ <div class="shop-item" style="border-color: var(--accent);">
+ <div class="item-info"><span class="item-title" style="color: var(--accent);">Dragon Realms 🗺️</span><span class="item-desc">Clear stages to earn coins, gems, and permanent progress.</span></div>
+ <strong id="adventure-progress" style="color: var(--accent);">Stage 1</strong>
+ </div>
+ <div id="adventure-map" style="display: flex; flex-direction: column; gap: 8px;"></div>
+ <div class="shop-item" style="border-color: var(--godly);">
+ <div class="item-info"><span class="item-title" style="color: var(--godly);">Weekly Boss Raid 👑</span><span class="item-desc" id="boss-raid-status">Deal damage to the boss for escalating rewards.</span><div class="pity-meter"><div id="boss-raid-fill" class="pity-meter-fill" style="background: var(--godly);"></div></div></div>
+ <button class="btn btn-danger" onclick="raidBoss()">Raid</button>
+ </div>
+ </div>
+
+ <div id="view-skills" class="view-panel">
+ <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-bottom: 8px;">Build a unique skill tree for every Common through Exclusive dragon.</p>
+ <input id="skill-dragon-search" class="dev-input" type="search" placeholder="Search dragons by name, rarity, or element" oninput="renderDragonSkillSelector()" style="width: 100%; margin-bottom: 6px;">
+ <label style="display: flex; align-items: center; gap: 6px; font-size: 10px; color: #cbd5e1; margin-bottom: 6px;"><input id="skill-owned-only" type="checkbox" onchange="renderDragonSkillSelector()"> Show owned dragons only</label>
+ <select id="skill-dragon-select" class="dev-input" onchange="renderDragonSkillTree()" style="width: 100%; margin-bottom: 8px;"></select>
+ <div id="skill-dragon-summary" class="shop-item" style="border-color: var(--accent);"></div>
+ <div id="dragon-skill-tree" class="skill-tree-list"></div>
+ </div>
+
+ <!-- Artifacts Tab -->
+ <div id="view-artifacts" class="view-panel">
+ <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-bottom: 4px;">Forge & upgrade ancient relics to empower your dragons!</p>
+ <div id="artifacts-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+ </div>
+
+ <div id="view-upgrades" class="view-panel">
+ <!-- Rebirth Feature -->
+ <div class="shop-item" style="border-color: var(--epic); background: #160a22;">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--epic);">Dimensional Rebirth 🌀</span>
+ <span class="item-desc" id="rebirth-desc">Reset progress, gems, dragons, and upgrades for +100% permanent boost (Req: 1M Coins)</span>
+ </div>
+ <button class="btn btn-purple" id="btn-rebirth" onclick="doRebirth()">Rebirth</button>
+ </div>
+
+ <div class="section-header">Elemental & Affinity Mastery</div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--elem-fire);">Fire Mastery 🔥</span>
+ <span class="item-desc" id="upg-elem-fire-desc">+20% Fire Dragon CPS</span>
+ </div>
+ <button class="btn" id="btn-elem-fire" onclick="buyElementUpgrade('fire')">500 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--elem-water);">Water Mastery 🌊</span>
+ <span class="item-desc" id="upg-elem-water-desc">+20% Water Dragon CPS</span>
+ </div>
+ <button class="btn" id="btn-elem-water" onclick="buyElementUpgrade('water')">500 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--elem-earth);">Earth Mastery 🌿</span>
+ <span class="item-desc" id="upg-elem-earth-desc">+20% Earth Dragon CPS</span>
+ </div>
+ <button class="btn" id="btn-elem-earth" onclick="buyElementUpgrade('earth')">500 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--elem-cosmic);">Cosmic Mastery 🌌</span>
+ <span class="item-desc" id="upg-elem-cosmic-desc">+20% Cosmic Dragon CPS</span>
+ </div>
+ <button class="btn" id="btn-elem-cosmic" onclick="buyElementUpgrade('cosmic')">1,500 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--elem-divinity);">Divinity Mastery 🌟</span>
+ <span class="item-desc" id="upg-elem-divinity-desc">+20% Divinity Dragon CPS</span>
+ </div>
+ <button class="btn" id="btn-elem-divinity" onclick="buyElementUpgrade('divinity')">3,000 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--elem-gods);">Gods Affinity ⚡</span>
+ <span class="item-desc" id="upg-elem-gods-desc">+20% Gods Dragon CPS</span>
+ </div>
+ <button class="btn" id="btn-elem-gods" onclick="buyElementUpgrade('gods')">10,000 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--elem-imaginative);">Imaginative Affinity 📖</span>
+ <span class="item-desc" id="upg-elem-imaginative-desc">+20% Imaginative Dragon CPS</span>
+ </div>
+ <button class="btn" id="btn-elem-imaginative" onclick="buyElementUpgrade('imaginative')">25,000 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--elem-light);">Light Affinity ☀️</span>
+ <span class="item-desc" id="upg-elem-light-desc">+20% Light Dragon CPS</span>
+ </div>
+ <button class="btn" id="btn-elem-light" onclick="buyElementUpgrade('light')">50,000 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--elem-dark);">Dark Affinity 🌙</span>
+ <span class="item-desc" id="upg-elem-dark-desc">+20% Dark Dragon CPS</span>
+ </div>
+ <button class="btn" id="btn-elem-dark" onclick="buyElementUpgrade('dark')">50,000 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--elem-prime);">Prime Affinity 🌀</span>
+ <span class="item-desc" id="upg-elem-prime-desc">+20% Prime Dragon CPS</span>
+ </div>
+ <button class="btn" id="btn-elem-prime" onclick="buyElementUpgrade('prime')">100,000 Coins</button>
+ </div>
+
+ <div class="section-header">Paragon Upgrades</div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--paragon);">Paragon Mastery 💎</span>
+ <span class="item-desc" id="upg-paragon-desc">Boosts Paragon GPS by +25%</span>
+ </div>
+ <button class="btn" id="btn-upg-paragon" onclick="buyUpgrade('paragon')">5,000,000 Coins</button>
+ </div>
+
+ <div class="section-header">Base Upgrades</div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Egg Click Power</span>
+ <span class="item-desc" id="upg-click-desc">Get +1 coin per tap</span>
+ </div>
+ <button class="btn" id="btn-upg-click" onclick="buyUpgrade('click')">50 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Dragon Nest</span>
+ <span class="item-desc" id="upg-nest-desc">Boosts all Dragon CPS by +15%</span>
+ </div>
+ <button class="btn" id="btn-upg-nest" onclick="buyUpgrade('nest')">200 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Critical Click</span>
+ <span class="item-desc" id="upg-crit-desc">+5% chance for 5x Crit Taps</span>
+ </div>
+ <button class="btn" id="btn-upg-crit" onclick="buyUpgrade('crit')">150 Coins</button>
+</div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Auto Tapper</span>
+ <span class="item-desc" id="upg-auto-desc">Automatically taps egg +1 time/sec</span>
+ </div>
+ <button class="btn" id="btn-upg-auto" onclick="buyUpgrade('auto')">300 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Lucky Charm</span>
+ <span class="item-desc" id="upg-luck-desc">+2% overall luck for Rare+ Gacha</span>
+ </div>
+ <button class="btn" id="btn-upg-luck" onclick="buyUpgrade('luck')">500 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Gem Collector 💎</span>
+ <span class="item-desc" id="upg-gemfind-desc">+2% chance to drop 1 Gem per tap</span>
+ </div>
+ <button class="btn" id="btn-upg-gemfind" onclick="buyUpgrade('gemfind')">1,000 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Ancient Wisdom 📜</span>
+ <span class="item-desc" id="upg-saleboost-desc">+10% sell price for all Dragons</span>
+ </div>
+ <button class="btn" id="btn-upg-saleboost" onclick="buyUpgrade('saleboost')">2,500 Coins</button>
+ </div>
+ </div>
+
+ <!-- Profile Tab -->
+ <div id="view-profile" class="view-panel">
+ <div class="shop-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+ <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+ <span class="item-title" style="color: var(--accent); font-size: 15px;">Dragon Tamer Profile</span>
+ <span id="prof-badge" style="font-size: 24px;">🌱</span>
+ </div>
+ <div style="font-size: 12px; display: flex; flex-direction: column; gap: 6px; width: 100%;">
+ <div style="display: flex; justify-content: space-between;"><span>Current Title:</span> <b id="prof-title" style="color: var(--gold);">Novice Tamer</b></div>
+ <div style="display: flex; justify-content: space-between;"><span>Rebirth Count:</span> <b id="prof-rebirths">0</b></div>
+ <div style="display: flex; justify-content: space-between;"><span>Lifetime Taps:</span> <b id="prof-taps">0</b></div>
+ <div style="display: flex; justify-content: space-between;"><span>Total Summons:</span> <b id="prof-summons">0</b></div>
+ <div style="display: flex; justify-content: space-between;"><span>Founders Collected:</span> <b id="prof-founders">0 / 5</b></div>
+ <div style="display: flex; justify-content: space-between;"><span>Secrets Discovered:</span> <b id="prof-secrets">0 / 3</b></div>
+ <div style="display: flex; justify-content: space-between;"><span>Dragon Gods Awaken:</span> <b id="prof-dragongods">0 / 7</b></div>
+ <div style="display: flex; justify-content: space-between;"><span>Fiction Dragons Summoned:</span> <b id="prof-fiction">0 / 4</b></div>
+ <div style="display: flex; justify-content: space-between;"><span>Primordial Dragons:</span> <b id="prof-primordial">0 / 3</b></div>
+ <div style="display: flex; justify-content: space-between;"><span>Paragon Dragons:</span> <b id="prof-paragon">0 / 5</b></div>
+ </div>
+ </div>
+ <div class="shop-item" style="border-color: var(--gold);">
+ <div class="item-info"><span class="item-title" style="color: var(--gold);">Statistics Dashboard 📊</span><span class="item-desc">Your lifetime dragon-taming records.</span></div>
+ <div id="statistics-dashboard" style="width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; font-size: 11px;"></div>
+ </div>
+ </div>
+
+ <div id="view-achievements" class="view-panel">
+ <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-bottom: 4px;">Complete extreme milestones for Gem rewards!</p>
+ <div id="achievements-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+ </div>
+
+ <div id="view-quests" class="view-panel">
+ <div class="shop-item" style="border-color: var(--gold);">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--gold);">Daily Quests 📜</span>
+ <span class="item-desc" id="quest-reset-status">Complete quests before they reset at midnight.</span>
+ </div>
+ <strong id="quest-completion-count" style="color: var(--gold);">0 / 3</strong>
+ </div>
+ <div id="daily-quests-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+ </div>
+
+ <div id="view-shop" class="view-panel">
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Pouch of Gems+</span>
+ <span class="item-desc">+50 Gems instantly</span>
+ </div>
+ <button class="btn btn-gold" onclick="buyGems(50, 1000)">1000 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Chest of Gems+</span>
+ <span class="item-desc">+1000 Gems instantly</span>
+ </div>
+ <button class="btn btn-gold" onclick="buyGems(1000, 5000)">5000 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Vault+ of Gems 🏛️</span>
+ <span class="item-desc">+100000 Gems instantly</span>
+ </div>
+ <button class="btn btn-gold" onclick="buyGems(10000, 100000)">100,000 Coins</button>
+ </div>
+ <div class="shop-item" style="border-color: var(--accent);">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--accent);">Mountain of Gems ⛰️</span>
+ <span class="item-desc">+100,000 Gems instantly</span>
+ </div>
+ <button class="btn btn-gold" onclick="buyGems(100000, 10000000)">10,000,000 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Dragon Elixir 🧪</span>
+ <span class="item-desc">Double CPS for 30 seconds</span>
+ </div>
+ <button class="btn btn-gold" onclick="buyElixir()">250 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Super Rush Elixir ⚡</span>
+ <span class="item-desc">5x CPS for 15 seconds</span>
+ </div>
+ <button class="btn btn-gold" onclick="buySuperElixir()">1,500 Coins</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Golden Egg 🌟</span>
+ <span class="item-desc">Guarantees 1 Legendary+ Dragon</span>
+ </div>
+ <button class="btn" style="background: var(--epic); color: #fff;" onclick="buyGoldenEgg()">1,000 Gems</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Void Egg 🌀</span>
+ <span class="item-desc">Guarantees 1 Godly+ Dragon</span>
+ </div>
+ <button class="btn" style="background: var(--unknown); color: #000;" onclick="buyVoidEgg()">5,000 Gems</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Unknown Egg 👁️</span>
+ <span class="item-desc">Guarantees 1 Unknown+ Dragon</span>
+ </div>
+ <button class="btn" style="background: var(--unknown); color: #000;" onclick="buyUnknownEgg()">10,000 Gems</button>
+ </div>
+ <div class="shop-item">
+ <div class="item-info">
+ <span class="item-title">Dragon God Egg ⚡</span>
+ <span class="item-desc">Guarantees 1 Dragon God+ Dragon</span>
+ </div>
+ <button class="btn" style="background: var(--dragongod); color: #000;" onclick="buyDragonGodEgg()">25,000 Gems</button>
+ </div>
+ <div class="shop-item" style="border-color: var(--godly);">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--godly);">Reset Game Progress ⚠️</span>
+ <span class="item-desc">Delete all dragons, coins, gems & upgrades</span>
+ </div>
+ <button class="btn btn-danger" onclick="resetProgress()">Reset All</button>
+ </div>
+ </div>
+
+ <div id="view-cosmetics" class="view-panel">
+ <div class="shop-item" style="border-color: var(--accent);">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--accent);">Cosmic Collection</span>
+ <span class="item-desc">Collect every egg skin and equip your favorite sound</span>
+ </div>
+ <strong id="cosmetic-progress" style="color: var(--accent);">0 / 0</strong>
+ </div>
+ <div id="cosmetics-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+ </div>
+
+ <div id="view-events" class="view-panel">
+ <div class="shop-item" style="border-color: var(--gold);">
+ <div class="item-info"><span class="item-title" style="color: var(--gold);">Hourly Event Festival 🎪</span><span class="item-desc" id="event-countdown">Rotating event loading...</span><div class="pity-meter"><div id="event-progress-fill" class="pity-meter-fill" style="background: var(--gold);"></div></div></div><strong id="event-progress-label" style="color: var(--gold);">0 / 100</strong>
+ </div>
+ <div class="shop-item" style="border-color: var(--epic);">
+ <div class="item-info"><span class="item-title" style="color: var(--epic);">Festival Ticket Chest</span><span class="item-desc" id="event-ticket-status">Fill the meter to claim this hour's ticket bundle.</span></div>
+ <button class="btn btn-purple" id="claim-event-tickets-btn" onclick="claimHourlyEventTickets()">Claim Tickets</button>
+ </div>
+ <div class="shop-item" style="border-color: var(--accent);">
+ <div class="item-info">
+ <span class="item-title">Hourly Event</span>
+ <span class="item-desc" id="seasonal-event-status">Loading event...</span>
+ </div>
+ </div>
+ <div id="seasonal-event-egg"></div>
+ <div class="section-header">Exclusive Dragon Vault</div>
+ <div class="shop-item" style="border-color: var(--exclusive);">
+ <div class="item-info">
+ <span class="item-title" style="color: var(--exclusive);">Limited-Time Exclusive Dragons</span>
+ <span class="item-desc">Buy with Rebirth Tokens. Each dragon generates Coins and Gems.</span>
+ </div>
+ <strong id="exclusive-token-balance" style="color: var(--exclusive);">0 Tokens</strong>
+ </div>
+ <div id="exclusive-dragon-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+ </div>
+
+ <div id="reveal-modal" class="modal hidden">
+ <div id="reveal-card" class="reveal-card">
+ <div id="reveal-icon" style="font-size: 72px;">🐉</div>
+ <h3 id="reveal-rarity" style="font-size: 14px; text-transform: uppercase; margin-top: 8px;">RARE</h3>
+ <h2 id="reveal-name" style="font-size: 20px; margin-bottom: 2px;">Blue Drake</h2>
+ <span id="reveal-element" style="font-size: 11px; font-weight: bold; margin-bottom: 4px;">🔥 Fire</span>
+ <p id="reveal-cps" style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">+5 Coins/sec</p>
+ <div id="batch-reveal-list" class="batch-reveal-list" hidden></div>
+ <button class="btn" onclick="closeReveal()">Awesome!</button>
+ </div>
+ </div>
+
+ <div id="sell-modal" class="modal hidden">
+ <div id="sell-card" class="reveal-card">
+ <div id="sell-icon" style="font-size: 64px;">🐉</div>
+ <h3 id="sell-rarity" style="font-size: 12px; text-transform: uppercase; margin-top: 6px;">RARE</h3>
+ <h2 id="sell-name" style="font-size: 18px; margin-bottom: 2px;">Blue Drake</h2>
+ <p id="sell-owned" style="font-size: 11px; color: #94a3b8; margin-bottom: 12px;">Owned: 0</p>
+ 
+ <div style="display: flex; gap: 8px; width: 100%; margin-bottom: 10px;">
+ <button class="btn btn-gold" style="flex: 1;" id="btn-sell-1" onclick="sellDragon(1)">Sell 1</button>
+ <button class="btn btn-gold" style="flex: 1;" id="btn-sell-all" onclick="sellDragon('all')">Sell All</button>
+ </div>
+ <div style="display: flex; gap: 8px; width: 100%; margin-bottom: 10px;">
+ <button class="btn btn-purple" style="flex: 1;" id="btn-evolve" onclick="evolveDragon()">Evolve 3x</button>
+ </div>
+ <div style="display: flex; gap: 8px; width: 100%; margin-bottom: 10px;">
+ <button class="btn btn-gold" style="flex: 1;" id="btn-fuse" onclick="fuseDragon()">Fuse 5x</button>
+ </div>
+ <button class="btn" style="background: #475569; color: #fff; box-shadow: none; width: 100%;" onclick="closeSellModal()">Cancel</button>
+ </div>
+ </div>
+ </div>
+
+ <script>
+ // 50 Rebirth Titles & Badges mapping
+ const REBIRTH_TITLES = {
+ 0: { title: "Novice Tamer", badge: "🌱" },
+ 1: { title: "New Dragon Master", badge: "🥉" },
+ 2: { title: "Apprentice Breeder", badge: "🥈" },
+ 3: { title: "Dragon Scholar", badge: "🥇" },
+ 4: { title: "Wyrm Whisperer", badge: "🏅" },
+ 5: { title: "Elemental Tactician", badge: "⭐" },
+ 6: { title: "Drake Champion", badge: "🌟" },
+ 7: { title: "Vanguard Commander", badge: "💫" },
+ 8: { title: "Flame & Tide Master", badge: "🔥" },
+ 9: { title: "Earth Shaker", badge: "🌿" },
+ 10: { title: "Sky Sovereign", badge: "🦅" },
+ 11: { title: "Mythic Wrangler", badge: "✨" },
+ 12: { title: "Abyssal Conqueror", badge: "🌊" },
+ 13: { title: "Celestial Seeker", badge: "🌌" },
+ 14: { title: "Rift Walker", badge: "🌀" },
+ 15: { title: "Astral Tamer", badge: "🪐" },
+ 16: { title: "Dragon Warden", badge: "🛡️" },
+ 17: { title: "Draconic Overlord", badge: "👑" },
+ 18: { title: "Ancient Awakener", badge: "📜" },
+ 19: { title: "Glitch Conqueror", badge: "👾" },
+ 20: { title: "Founding Patriarch", badge: "🏛️" },
+ 21: { title: "Titan Tamer", badge: "💥" },
+ 22: { title: "Temporal Weaver", badge: "⏳" },
+ 23: { title: "Singularity Lord", badge: "🕳️" },
+ 24: { title: "Cosmic Architect", badge: "🌠" },
+ 25: { title: "Void Monarch", badge: "👁️" },
+ 26: { title: "Divine Pathfinder", badge: "☀️" },
+ 27: { title: "Shadow Sovereign", badge: "🌙" },
+ 28: { title: "Ethereal Emperor", badge: "🔮" },
+ 29: { title: "Dragon God High Priest", badge: "⚡" },
+ 30: { title: "Multiverse Guardian", badge: "♾️" },
+ 31: { title: "Fiction Fabricator", badge: "📖" },
+ 32: { title: "Imaginative King", badge: "🎨" },
+ 33: { title: "Reality Breaker", badge: "☣️" },
+ 34: { title: "Genesis Titan", badge: "💎" },
+ 35: { title: "Dimensional Master", badge: "🌌" },
+ 36: { title: "Eternal Dragon Lord", badge: "⚔️" },
+ 37: { title: "Omni-Slayer", badge: "🗡️" },
+ 38: { title: "Starlight Paragon", badge: "💫" },
+ 39: { title: "Infinite Dominator", badge: "🔱" },
+ 40: { title: "Primordial Herald", badge: "🌀" },
+ 41: { title: "Prime Ascendant", badge: "💠" },
+ 42: { title: "Cosmological Conqueror", badge: "🪐" },
+ 43: { title: "Dragon God Ascendant", badge: "⚡" },
+ 44: { title: "Absolute Entity", badge: "☸️" },
+ 45: { title: "Transcendent Monarch", badge: "🌌" },
+ 46: { title: "Apex Prime Dragon Master", badge: "⚜️" },
+ 47: { title: "Creation Deity", badge: "🛐" },
+ 48: { title: "Omnipotent Dragon Tamer", badge: "🔯" },
+ 49: { title: "Supreme Reality Monarch", badge: "🧘" },
+ 50: { title: "Grand Cosmological Sovereign", badge: "🏆" }
+ };
+
+ function getRebirthInfo(count) {
+ if (count >= 50) return REBIRTH_TITLES[50];
+ return REBIRTH_TITLES[count] || { title: `Rebirth Master ${count}`, badge: "🐲" };
+ }
+
+ // Web Audio Synthesizer
+ let audioCtx = null;
+
+ function getAudioContext() {
+ if (audioCtx) return audioCtx;
+ const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+ if (!AudioContextClass) return null;
+ try {
+ audioCtx = new AudioContextClass();
+ } catch (error) {
+ audioCtx = null;
+ }
+ return audioCtx;
+ }
+
+ function playSound(type) {
+ const context = getAudioContext();
+ if (!context) return;
+ if (context.state === 'suspended') context.resume().catch(() => {});
+ const osc = audioCtx.createOscillator();
+ const gain = audioCtx.createGain();
+ osc.connect(gain);
+ gain.connect(audioCtx.destination);
+ const now = context.currentTime;
+
+ if (type === 'tap') {
+ osc.type = 'sine';
+ osc.frequency.setValueAtTime(300, now);
+ gain.gain.setValueAtTime(0.05, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
+ osc.start(now); osc.stop(now + 0.04);
+ } else if (type === 'crystalTap') {
+ osc.type = 'sine';
+ osc.frequency.setValueAtTime(880, now);
+ osc.frequency.exponentialRampToValueAtTime(1320, now + 0.07);
+ gain.gain.setValueAtTime(0.055, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.07);
+ osc.start(now); osc.stop(now + 0.07);
+ } else if (type === 'goldenTap') {
+ osc.type = 'triangle';
+ osc.frequency.setValueAtTime(520, now);
+ osc.frequency.exponentialRampToValueAtTime(780, now + 0.09);
+ gain.gain.setValueAtTime(0.06, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.09);
+ osc.start(now); osc.stop(now + 0.09);
+ } else if (type === 'voidRiftTap') {
+ osc.type = 'square';
+ osc.frequency.setValueAtTime(420, now);
+ osc.frequency.exponentialRampToValueAtTime(90, now + 0.16);
+ osc.frequency.setValueAtTime(260, now + 0.18);
+ osc.frequency.exponentialRampToValueAtTime(55, now + 0.34);
+ gain.gain.setValueAtTime(0.045, now);
+ gain.gain.linearRampToValueAtTime(0.065, now + 0.12);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.34);
+ osc.start(now); osc.stop(now + 0.34);
+ } else if (type === 'sunTap') {
+ osc.type = 'triangle';
+ osc.frequency.setValueAtTime(660, now);
+ osc.frequency.setValueAtTime(990, now + 0.05);
+ gain.gain.setValueAtTime(0.06, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+ osc.start(now); osc.stop(now + 0.1);
+ } else if (type === 'celestialTap' || type === 'aquaTap') {
+ osc.type = 'sine';
+ osc.frequency.setValueAtTime(type === 'aquaTap' ? 420 : 740, now);
+ osc.frequency.exponentialRampToValueAtTime(type === 'aquaTap' ? 680 : 1480, now + 0.12);
+ gain.gain.setValueAtTime(0.055, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+ osc.start(now); osc.stop(now + 0.12);
+ } else if (type === 'magmaTap') {
+ osc.type = 'sawtooth';
+ osc.frequency.setValueAtTime(110, now);
+ osc.frequency.exponentialRampToValueAtTime(260, now + 0.11);
+ gain.gain.setValueAtTime(0.06, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.11);
+ osc.start(now); osc.stop(now + 0.11);
+ } else if (type === 'glitchTap') {
+ osc.type = 'square';
+ osc.frequency.setValueAtTime(180, now);
+ osc.frequency.setValueAtTime(760, now + 0.04);
+ osc.frequency.setValueAtTime(240, now + 0.08);
+ gain.gain.setValueAtTime(0.045, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.11);
+ osc.start(now); osc.stop(now + 0.11);
+ } else if (type === 'paragonTap') {
+ osc.type = 'triangle';
+ osc.frequency.setValueAtTime(880, now);
+ osc.frequency.setValueAtTime(1320, now + 0.06);
+ osc.frequency.setValueAtTime(1760, now + 0.12);
+ gain.gain.setValueAtTime(0.06, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+ osc.start(now); osc.stop(now + 0.18);
+ } else if (type === 'crit') {
+ osc.type = 'triangle';
+ osc.frequency.setValueAtTime(500, now);
+ osc.frequency.exponentialRampToValueAtTime(900, now + 0.08);
+ gain.gain.setValueAtTime(0.1, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+ osc.start(now); osc.stop(now + 0.08);
+ } else if (type === 'summon') {
+ osc.type = 'triangle';
+ osc.frequency.setValueAtTime(200, now);
+ osc.frequency.exponentialRampToValueAtTime(600, now + 0.2);
+ gain.gain.setValueAtTime(0.15, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+ osc.start(now); osc.stop(now + 0.2);
+ } else if (type === 'godly') {
+ osc.type = 'sawtooth';
+ osc.frequency.setValueAtTime(400, now);
+ osc.frequency.setValueAtTime(600, now + 0.1);
+ osc.frequency.setValueAtTime(800, now + 0.2);
+ gain.gain.setValueAtTime(0.2, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+ osc.start(now); osc.stop(now + 0.4);
+ } else if (type === 'cosmic') {
+ osc.type = 'sine';
+ osc.frequency.setValueAtTime(300, now);
+ osc.frequency.exponentialRampToValueAtTime(1200, now + 0.5);
+ gain.gain.setValueAtTime(0.25, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+ osc.start(now); osc.stop(now + 0.6);
+ } else if (type === 'unknown') {
+ osc.type = 'sawtooth';
+ osc.frequency.setValueAtTime(150, now);
+ osc.frequency.exponentialRampToValueAtTime(1500, now + 0.8);
+ gain.gain.setValueAtTime(0.3, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.8);
+ osc.start(now); osc.stop(now + 0.8);
+ } else if (type === 'founders') {
+ osc.type = 'triangle';
+ osc.frequency.setValueAtTime(523.25, now);
+ osc.frequency.setValueAtTime(659.25, now + 0.1);
+ osc.frequency.setValueAtTime(783.99, now + 0.2);
+ osc.frequency.setValueAtTime(1046.50, now + 0.3);
+ gain.gain.setValueAtTime(0.25, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.7);
+ osc.start(now); osc.stop(now + 0.7);
+ } else if (type === 'secret') {
+ osc.type = 'sawtooth';
+ osc.frequency.setValueAtTime(100, now);
+ osc.frequency.exponentialRampToValueAtTime(800, now + 0.4);
+ osc.frequency.exponentialRampToValueAtTime(200, now + 0.8);
+ gain.gain.setValueAtTime(0.3, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.9);
+ osc.start(now); osc.stop(now + 0.9);
+ } else if (type === 'sell') {
+ osc.type = 'sine';
+ osc.frequency.setValueAtTime(800, now);
+ osc.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+ gain.gain.setValueAtTime(0.1, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+ osc.start(now); osc.stop(now + 0.1);
+ } else if (type === 'god_fire' || type === 'god_water' || type === 'god_earth' || type === 'god_cosmic' || type === 'god_divine' || type === 'god_secret' || type === 'god_all') {
+ osc.type = 'sawtooth';
+ osc.frequency.setValueAtTime(300, now);
+ osc.frequency.exponentialRampToValueAtTime(2400, now + 1.0);
+ gain.gain.setValueAtTime(0.35, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 1.0);
+ osc.start(now); osc.stop(now + 1.0);
+ } else if (type === 'fiction' || type === 'primordial') {
+ osc.type = 'sawtooth';
+ osc.frequency.setValueAtTime(120, now);
+ osc.frequency.exponentialRampToValueAtTime(3200, now + 1.5);
+ gain.gain.setValueAtTime(0.4, now);
+ gain.gain.linearRampToValueAtTime(0.01, now + 1.5);
+ osc.start(now); osc.stop(now + 1.5);
+ }
+ }
+
+ // Trigger Emoji Particles
+ function spawnEmojiParticles(emoji, posX, posY) {
+ for (let i = 0; i < 12; i++) {
+ const el = document.createElement('div');
+ el.className = 'floating-emoji';
+ el.textContent = emoji;
+ el.style.left = (posX + (Math.random() * 80 - 40)) + 'px';
+ el.style.top = (posY + (Math.random() * 80 - 40)) + 'px';
+ document.body.appendChild(el);
+ setTimeout(() => el.remove(), 1200);
+ }
+ }
+
+ // Rarities & Elements / Affinities
+ const RARITIES = {
+ common: { name: 'Common', chance: 44.95, color: 'var(--common)', cps: 1, sellValue: 20 },
+ uncommon: { name: 'Uncommon', chance: 25, color: 'var(--uncommon)', cps: 3, sellValue: 50 },
+ rare: { name: 'Rare', chance: 15, color: 'var(--rare)', cps: 10, sellValue: 150 },
+ epic: { name: 'Epic', chance: 8.85, color: 'var(--epic)', cps: 35, sellValue: 175 },
+ legendary: { name: 'Legendary', chance: 4, color: 'var(--legendary)', cps: 50, sellValue: 600 },
+ heroic: { name: 'Heroic', chance: 1.8, color: 'var(--heroic)', cps: 100, sellValue: 650 },
+ godly: { name: 'Godly', chance: 0.2, color: 'var(--godly)', cps: 125, sellValue: 700 },
+ cosmic: { name: 'Cosmic', chance: 0.1, color: 'var(--cosmic)', cps: 150, sellValue: 850 },
+ unknown: { name: 'Unknown', chance: 0.05, color: 'var(--unknown)', cps: 250, sellValue: 950 },
+ founders: { name: 'Founders', chance: 0.03, color: 'var(--founders)', cps: 450, sellValue: 1000 },
+ secret: { name: 'Secret', chance: 0.01, color: 'var(--secret)', cps: 550, sellValue: 5000 },
+ dragongod: { name: 'Dragon God', chance: 0.008, color: 'var(--dragongod)', cps: 700, sellValue: 2500 },
+ fiction: { name: 'Fiction', chance: 0.0015, color: 'var(--fiction)', cps: 1000, sellValue: 100000 },
+ primordial: { name: 'Primordial', chance: 0.000001, color: 'var(--primordial)', cps: 1500, sellValue: 5000000 },
+ omnipotent: { name: 'Omnipotent', chance: 0.0000001, color: 'var(--omnipotent)', cps: 3000, sellValue: 1000000000 },
+ paragon: { name: 'Paragon', chance: 0.0000001, color: 'var(--paragon)', cps: 0, gemPerSecond: 100, sellValue: 10000000 },
+ exclusive: { name: 'Exclusive', chance: 0, color: 'var(--exclusive)', cps: 0, gemPerSecond: 0, sellValue: 0 }
+ ,adventure: { name: 'Adventure', chance: 0, color: 'var(--adventure)', cps: 0, gemPerSecond: 0, sellValue: 250000 }
+ };
+
+ const ELEMENTS = {
+ fire: { name: 'Fire', icon: '🔥', color: 'var(--elem-fire)' },
+ water: { name: 'Water', icon: '🌊', color: 'var(--elem-water)' },
+ earth: { name: 'Earth', icon: '🌿', color: 'var(--elem-earth)' },
+ cosmic: { name: 'Cosmic', icon: '🌌', color: 'var(--elem-cosmic)' },
+ divinity: { name: 'Divinity', icon: '🌟', color: 'var(--elem-divinity)' },
+ gods: { name: 'Gods', icon: '⚡', color: 'var(--elem-gods)' },
+ imaginative: { name: 'Imaginative', icon: '📖', color: 'var(--elem-imaginative)' },
+ light: { name: 'Light', icon: '☀️', color: 'var(--elem-light)' },
+ dark: { name: 'Dark', icon: '🌙', color: 'var(--elem-dark)' },
+ prime: { name: 'Prime', icon: '🌀', color: 'var(--elem-prime)' }
+ };
+
+ const ARTIFACTS = [
+ { id: 'art_1', name: 'Ruby Dragon Heart', icon: '❤️', desc: '+50% Global Dragon CPS', baseCostGems: 20, cpsBoost: 0.5, clickBoost: 0, luckBoost: 0 },
+ { id: 'art_2', name: 'Golden Gauntlet', icon: '🥊', desc: '+10 Egg Click Power', baseCostGems: 30, cpsBoost: 0, clickBoost: 10, luckBoost: 0 },
+ { id: 'art_3', name: 'Clairvoyant Eye', icon: '👁️', desc: '+5% Luck for Gacha Summons', baseCostGems: 50, cpsBoost: 0, clickBoost: 0, luckBoost: 5 },
+ { id: 'art_4', name: 'Celestial Crown', icon: '👑', desc: '+100% Global Dragon CPS', baseCostGems: 100, cpsBoost: 1.0, clickBoost: 0, luckBoost: 0 },
+ { id: 'art_5', name: 'Aether Scepter', icon: '🪄', desc: '+25 Click Power & +20% CPS', baseCostGems: 200, cpsBoost: 0.2, clickBoost: 25, luckBoost: 0 },
+ { id: 'art_6', name: 'Infinity Orb', icon: '🔮', desc: '+200% Global Dragon CPS & +10% Luck', baseCostGems: 500, cpsBoost: 2.0, clickBoost: 0, luckBoost: 10 }
+ ,{ id: 'paragon_art_1', name: 'Paragon Prism', icon: '💎', desc: '+25% Paragon GPS', baseCostGems: 10000, cpsBoost: 0, clickBoost: 0, luckBoost: 0, gemBoost: 0.25 }
+ ,{ id: 'paragon_art_2', name: 'Zenith Crown', icon: '👑', desc: '+50% Paragon GPS', baseCostGems: 25000, cpsBoost: 0, clickBoost: 0, luckBoost: 0, gemBoost: 0.5 }
+ ,{ id: 'paragon_art_3', name: 'Eternal Gemheart', icon: '💖', desc: '+100% Paragon GPS', baseCostGems: 100000, cpsBoost: 0, clickBoost: 0, luckBoost: 0, gemBoost: 1.0 }
+ ];
+
+ const EVOLUTION_FORMS = [
+  { name: 'Awakened', icon: '🌟', incomeMultiplier: 1.5, skillMultiplier: 1.1 },
+  { name: 'Ascended', icon: '🔥', incomeMultiplier: 2.2, skillMultiplier: 1.2 },
+  { name: 'Elder', icon: '🐲', incomeMultiplier: 3.1, skillMultiplier: 1.35 },
+  { name: 'Mystic', icon: '🔮', incomeMultiplier: 4.3, skillMultiplier: 1.5 },
+  { name: 'Celestial', icon: '🌌', incomeMultiplier: 5.8, skillMultiplier: 1.7 },
+  { name: 'Eclipse', icon: '🌑', incomeMultiplier: 7.8, skillMultiplier: 1.95 },
+  { name: 'Transcendent', icon: '💠', incomeMultiplier: 10.4, skillMultiplier: 2.25 },
+  { name: 'Eternal', icon: '♾️', incomeMultiplier: 13.8, skillMultiplier: 2.6 },
+  { name: 'Sovereign', icon: '👑', incomeMultiplier: 18.2, skillMultiplier: 3 },
+  { name: 'Dragon Overlord', icon: '🐉', incomeMultiplier: 24, skillMultiplier: 3.5 }
+ ];
+
+ const SUMMON_TICKET_TYPES = {
+  normal: { name: 'Normal', icon: '🎟️', pool: null },
+  rare: { name: 'Rare', icon: '🎫', pool: 'rare+' },
+  legendary: { name: 'Legendary', icon: '🏷️', pool: 'legendary+' },
+  element: { name: 'Element', icon: '🪄', pool: 'element' }
+ };
+
+ const COSMETICS = [
+ { id: 'classic', name: 'Classic Egg', tier: 'Common', egg: '🥚', accent: '#38bdf8', background: '#151d2a', sound: 'tap', particle: '✨', multiplier: 1, price: 0 },
+ { id: 'crystal', name: 'Crystal Egg', tier: 'Rare', egg: '💎', accent: '#67e8f9', background: '#102a35', sound: 'crystalTap', particle: '❄️', multiplier: 1.1, price: 50 },
+ { id: 'golden', name: 'Golden Egg', tier: 'Epic', egg: '🥇', accent: '#facc15', background: '#30230b', sound: 'goldenTap', particle: '⭐', multiplier: 1.25, price: 100 },
+ { id: 'void', name: 'Void Egg', tier: 'Legendary', egg: '🌀', accent: '#a78bfa', background: '#1d1635', sound: 'voidRiftTap', particle: '🌀', multiplier: 1.5, price: 150 },
+ { id: 'sun', name: 'Sunfire Egg', tier: 'Mythic', egg: '☀️', accent: '#fb7185', background: '#35151e', sound: 'sunTap', particle: '🔥', multiplier: 2, price: 200 },
+ { id: 'celestial', name: 'Celestial Egg', tier: 'Divine', egg: '🌌', accent: '#c4b5fd', background: '#17132d', sound: 'celestialTap', particle: '🌟', multiplier: 2.25, price: 300 },
+ { id: 'magma', name: 'Magma Egg', tier: 'Divine', egg: '🌋', accent: '#f97316', background: '#32150b', sound: 'magmaTap', particle: '🔥', multiplier: 2.5, price: 400 },
+ { id: 'aqua', name: 'Aqua Egg', tier: 'Divine', egg: '🌊', accent: '#22d3ee', background: '#0b2932', sound: 'aquaTap', particle: '💧', multiplier: 2.75, price: 500 },
+ { id: 'glitch', name: 'Glitch Egg', tier: 'Transcendent', egg: '👾', accent: '#34d399', background: '#0b241d', sound: 'glitchTap', particle: '⚡', multiplier: 3, price: 750 },
+ { id: 'paragon', name: 'Paragon Egg', tier: 'Transcendent', egg: '💠', accent: '#fb7185', background: '#35121f', sound: 'paragonTap', particle: '💎', multiplier: 4, price: 1000 }
+ ,{ id: 'adventure_ember', name: 'Ember Relic Egg', tier: 'Adventure Exclusive', egg: '🔥', accent: '#f97316', background: '#3a1609', sound: 'magmaTap', particle: '🔥', multiplier: 3.5, price: 0, adventureStage: 1 }
+ ,{ id: 'adventure_frost', name: 'Frostbound Relic Egg', tier: 'Adventure Exclusive', egg: '❄️', accent: '#67e8f9', background: '#102a35', sound: 'aquaTap', particle: '❄️', multiplier: 4, price: 0, adventureStage: 2 }
+ ,{ id: 'adventure_celestial', name: 'Celestial Relic Egg', tier: 'Adventure Exclusive', egg: '🌌', accent: '#c4b5fd', background: '#17132d', sound: 'celestialTap', particle: '🌟', multiplier: 4.5, price: 0, adventureStage: 3 }
+ ,{ id: 'adventure_shadow', name: 'Shadow Relic Egg', tier: 'Adventure Exclusive', egg: '🌑', accent: '#8b5cf6', background: '#17102d', sound: 'voidRiftTap', particle: '🌑', multiplier: 5, price: 0, adventureStage: 4 }
+ ,{ id: 'adventure_prime', name: 'Primordial Relic Egg', tier: 'Adventure Exclusive', egg: '💠', accent: '#00f2fe', background: '#062b35', sound: 'paragonTap', particle: '💠', multiplier: 6, price: 0, adventureStage: 5 }
+ ];
+
+ const SEASONAL_EVENTS = [
+ { id: 'prime', name: 'Prime', egg: '🌀', rarity: 'primordial', price: 10000, color: 'var(--primordial)' },
+ { id: 'fiction', name: 'Fiction', egg: '📖', rarity: 'fiction', price: 100000, color: 'var(--fiction)' },
+ { id: 'omni', name: 'Omni', egg: '♾️', rarity: 'omnipotent', price: 1000000, color: 'var(--omnipotent)' }
+ ];
+
+ const DRAGONS = [
+ { id: 'd1', name: 'Lizard Wyrm', rarity: 'common', element: 'earth', icon: '🦎' },
+ { id: 'd1_2', name: 'Mud Hatchling', rarity: 'common', element: 'earth', icon: '🐸' },
+ { id: 'd1_3', name: 'Cave Gecko', rarity: 'common', element: 'earth', icon: '🦎' },
+ { id: 'new_common_1', name: 'Pebblewing Dragon', rarity: 'common', element: 'earth', icon: '🌿' },
+ { id: 'new_common_2', name: 'Breezetail Dragon', rarity: 'common', element: 'water', icon: '🔥' },
+ { id: 'd2', name: 'Forest Drake', rarity: 'uncommon', element: 'earth', icon: '🐊' },
+ { id: 'd2_2', name: 'Swamp Stalker', rarity: 'uncommon', element: 'water', icon: '🐍' },
+ { id: 'd2_3', name: 'Coral Serpent', rarity: 'uncommon', element: 'water', icon: '🐠' },
+ { id: 'new_uncommon_1', name: 'Mossback Dragon', rarity: 'uncommon', element: 'earth', icon: '🌱' },
+ { id: 'new_uncommon_2', name: 'Mistfin Dragon', rarity: 'uncommon', element: 'water', icon: '🌫️' },
+ { id: 'd3', name: 'Frost Dragon', rarity: 'rare', element: 'water', icon: '🥶' },
+ { id: 'd3_2', name: 'Storm Hatchling', rarity: 'rare', element: 'water', icon: '🌩️' },
+ { id: 'd3_3', name: 'Volcano Whelp', rarity: 'rare', element: 'fire', icon: '🌋' },
+ { id: 'new_rare_1', name: 'Thundercrest Dragon', rarity: 'rare', element: 'gods', icon: '⚡' },
+ { id: 'new_rare_2', name: 'Tideglass Dragon', rarity: 'rare', element: 'water', icon: '🫧' },
+ { id: 'd4', name: 'Shadow Serpent', rarity: 'epic', element: 'cosmic', icon: '👾' },
+ { id: 'd4_2', name: 'Amethyst Drake', rarity: 'epic', element: 'cosmic', icon: '🔮' },
+ { id: 'd4_3', name: 'Toxic Hydra', rarity: 'epic', element: 'earth', icon: '🧪' },
+ { id: 'new_epic_1', name: 'Astral Pyre Dragon', rarity: 'epic', element: 'cosmic', secondaryElement: 'fire', icon: '☄️' },
+ { id: 'new_epic_2', name: 'Moonveil Dragon', rarity: 'epic', element: 'dark', secondaryElement: 'water', icon: '🌙' },
+ { id: 'd5', name: 'Solar Wyvern', rarity: 'legendary', element: 'fire', icon: '☀️' },
+ { id: 'd5_2', name: 'Golden Sovereign', rarity: 'legendary', element: 'divinity', icon: '👑' },
+ { id: 'd5_3', name: 'Phoenix Dragon', rarity: 'legendary', element: 'fire', icon: '🔥' },
+ { id: 'new_legendary_1', name: 'Crownflare Dragon', rarity: 'legendary', element: 'light', secondaryElement: 'fire', icon: '🌞' },
+ { id: 'new_legendary_2', name: 'Tempest Monarch', rarity: 'legendary', element: 'gods', secondaryElement: 'cosmic', icon: '🌪️' },
+ { id: 'd6', name: 'Inferno Titan', rarity: 'heroic', element: 'fire', icon: '💥' },
+ { id: 'd6_2', name: 'Abyssal Leviathan', rarity: 'heroic', element: 'water', icon: '🌊' },
+ { id: 'd6_3', name: 'Void Archon', rarity: 'heroic', element: 'cosmic', icon: '🌌' },
+ { id: 'd7', name: 'Celestial God', rarity: 'godly', element: 'divinity', icon: '⚡' },
+ { id: 'd7_2', name: 'Time Weaver', rarity: 'godly', element: 'divinity', icon: '⏳' },
+ { id: 'd7_3', name: 'Cosmic Overlord', rarity: 'godly', element: 'cosmic', icon: '🌟' },
+ { id: 'd8_1', name: 'Supernova Entity', rarity: 'cosmic', element: 'cosmic', icon: '💫' },
+ { id: 'd8_2', name: 'Galactic Nebula', rarity: 'cosmic', element: 'cosmic', icon: '🌌' },
+ { id: 'd8_3', name: 'Black Hole Behemoth', rarity: 'cosmic', element: 'cosmic', icon: '🕳️' },
+ { id: 'd8_4', name: 'Astral Singularity', rarity: 'cosmic', element: 'cosmic', icon: '✨' },
+ { id: 'd8_5', name: 'Starlight Eclipse', rarity: 'cosmic', element: 'cosmic', icon: '🪐' },
+ { id: 'd8_6', name: 'Infinity Comet', rarity: 'cosmic', element: 'cosmic', icon: '☄️' },
+ { id: 'd9_1', name: 'Anomalous Echo', rarity: 'unknown', element: 'cosmic', icon: '👁️' },
+ { id: 'd9_2', name: 'Glitch Behemoth', rarity: 'unknown', element: 'cosmic', icon: '👾' },
+ { id: 'd9_3', name: 'Cipher Phantom', rarity: 'unknown', element: 'cosmic', icon: '☣️' },
+ { id: 'd9_4', name: 'Dimensional Tear', rarity: 'unknown', element: 'cosmic', icon: '🌀' },
+ { id: 'd9_5', name: 'Null Reality', rarity: 'unknown', element: 'cosmic', icon: '⬛' },
+ { id: 'd9_6', name: 'Paradox Serpent', rarity: 'unknown', element: 'cosmic', icon: '♾️' },
+ { id: 'd9_7', name: 'Matrix Sovereign', rarity: 'unknown', element: 'cosmic', icon: '🖥️' },
+ { id: 'd9_8', name: 'Obscure Sentinel', rarity: 'unknown', element: 'earth', icon: '🗿' },
+ { id: 'd9_9', name: 'Ethereal Zero', rarity: 'unknown', element: 'cosmic', icon: '👻' },
+ { id: 'd9_10', name: 'Quantum Catalyst', rarity: 'unknown', element: 'divinity', icon: '⚛️' },
+ 
+ // FOUNDERS (Dual Affinities Applied)
+ { id: 'f1', name: 'Aetherion Prime', rarity: 'founders', element: 'divinity', secondaryElement: 'light', icon: '👑' },
+ { id: 'f2', name: 'Ignis Architect', rarity: 'founders', element: 'fire', secondaryElement: 'dark', icon: '🔥' },
+ { id: 'f3', name: 'Terran Genesis', rarity: 'founders', element: 'earth', secondaryElement: 'prime', icon: '🌿' },
+ { id: 'f4', name: 'Astraea Origin', rarity: 'founders', element: 'cosmic', secondaryElement: 'light', icon: '🌌' },
+ { id: 'f5', name: 'Chronos Elder', rarity: 'founders', element: 'divinity', secondaryElement: 'prime', icon: '⏳' },
+ 
+ // SECRETS (Dual Affinities Applied)
+ { id: 's1', name: 'Glitch Reality', rarity: 'secret', element: 'cosmic', secondaryElement: 'dark', icon: '👾' },
+ { id: 's2', name: 'Void Entity', rarity: 'secret', element: 'cosmic', secondaryElement: 'prime', icon: '👁️' },
+ { id: 's3', name: 'Null Core', rarity: 'secret', element: 'divinity', secondaryElement: 'dark', icon: '⬛' },
+ { id: 'new_secret_1', name: 'Abyssal Cipher', rarity: 'secret', element: 'dark', secondaryElement: 'cosmic', icon: '🕳️', sound: 'secret', particleEmoji: '🌀' },
+ { id: 'new_secret_2', name: 'Reality Breaker', rarity: 'secret', element: 'cosmic', secondaryElement: 'imaginative', icon: '💥', sound: 'secret', particleEmoji: '⚡' },
+ 
+ // DRAGON GODS (Dual Affinities Applied)
+ { id: 'dg_1', name: 'Fire Dragon God', rarity: 'dragongod', element: 'gods', secondaryElement: 'fire', icon: '🔥', sound: 'god_fire', particleEmoji: '🔥' },
+ { id: 'dg_2', name: 'Water Dragon God', rarity: 'dragongod', element: 'gods', secondaryElement: 'water', icon: '🌊', sound: 'god_water', particleEmoji: '🌊' },
+ { id: 'dg_3', name: 'Earth Dragon God', rarity: 'dragongod', element: 'gods', secondaryElement: 'earth', icon: '🌿', sound: 'god_earth', particleEmoji: '🌿' },
+ { id: 'dg_4', name: 'Cosmic Dragon God', rarity: 'dragongod', element: 'gods', secondaryElement: 'cosmic', icon: '🌌', sound: 'god_cosmic', particleEmoji: '🌌' },
+ { id: 'dg_5', name: 'Divine Dragon God', rarity: 'dragongod', element: 'gods', secondaryElement: 'divinity', icon: '🌟', sound: 'god_divine', particleEmoji: '🌟' },
+ { id: 'dg_6', name: 'Secret Dragon God', rarity: 'dragongod', element: 'gods', secondaryElement: 'prime', icon: '👁️', sound: 'god_secret', particleEmoji: '👁️' },
+ { id: 'dg_7', name: 'God of All Dragons', rarity: 'dragongod', element: 'gods', secondaryElement: 'light', icon: '👑', sound: 'god_all', particleEmoji: '👑' },
+
+ // FICTION DRAGONS (Dual Affinities Applied)
+ { id: 'fic_1', name: 'Yu Zhong', rarity: 'fiction', element: 'imaginative', secondaryElement: 'dark', icon: '🐉', sound: 'fiction', particleEmoji: '✨' },
+ { id: 'fic_2', name: 'Veldora', rarity: 'fiction', element: 'imaginative', secondaryElement: 'light', icon: '🌪️', sound: 'fiction', particleEmoji: '💨' },
+ { id: 'fic_3', name: 'Diablo', rarity: 'fiction', element: 'imaginative', secondaryElement: 'dark', icon: '😈', sound: 'fiction', particleEmoji: '🔥' },
+ { id: 'fic_4', name: 'Angelus', rarity: 'fiction', element: 'imaginative', secondaryElement: 'light', icon: '👼', sound: 'fiction', particleEmoji: '🌟' },
+ { id: 'new_fiction_1', name: 'Zilong', rarity: 'fiction', element: 'imaginative', secondaryElement: 'gods', icon: '🐉', sound: 'fiction', particleEmoji: '⚔️' },
+ { id: 'new_fiction_2', name: 'Milim Dragonova', rarity: 'fiction', element: 'imaginative', secondaryElement: 'fire', icon: '🐲', sound: 'fiction', particleEmoji: '💥' },
+
+ // PRIMORDIAL DRAGONS (New Rarity & Dual Affinities)
+ { id: 'p1', name: 'Genesis Primordial', rarity: 'primordial', element: 'prime', secondaryElement: 'light', icon: '💠', sound: 'primordial', particleEmoji: '🌀' },
+ { id: 'p2', name: 'Chaos Oblivion', rarity: 'primordial', element: 'prime', secondaryElement: 'dark', icon: '☸️', sound: 'primordial', particleEmoji: '🌌' },
+ { id: 'p3', name: 'Aether Sovereign', rarity: 'primordial', element: 'prime', secondaryElement: 'gods', icon: '🔱', sound: 'primordial', particleEmoji: '✨' },
+ { id: 'new_primordial_1', name: 'Worldforge Dragon', rarity: 'primordial', element: 'prime', secondaryElement: 'earth', icon: '🌍', sound: 'primordial', particleEmoji: '🌋' },
+ { id: 'new_primordial_2', name: 'Star-Eater Dragon', rarity: 'primordial', element: 'prime', secondaryElement: 'cosmic', icon: '🌠', sound: 'primordial', particleEmoji: '💫' },
+
+ // OMNIPOTENT DRAGONS (Highest Rarity Tier)
+ { id: 'o1', name: 'The All-Father', rarity: 'omnipotent', element: 'prime', secondaryElement: 'gods', icon: '☄️', sound: 'primordial', particleEmoji: '🌠' },
+ { id: 'o2', name: 'Eclipse Dominion', rarity: 'omnipotent', element: 'prime', secondaryElement: 'dark', icon: '🜂', sound: 'primordial', particleEmoji: '🌙' },
+ { id: 'o3', name: 'Astra Omni', rarity: 'omnipotent', element: 'gods', secondaryElement: 'light', icon: '✦', sound: 'primordial', particleEmoji: '✨' },
+ { id: 'o4', name: 'Void Sovereign', rarity: 'omnipotent', element: 'cosmic', secondaryElement: 'prime', icon: '🕰️', sound: 'primordial', particleEmoji: '♾️' },
+ { id: 'o5', name: 'Edenfall Ascendant', rarity: 'omnipotent', element: 'divinity', secondaryElement: 'prime', icon: '👑', sound: 'primordial', particleEmoji: '💎' },
+
+ { id: 'pg1', name: 'Rosebound Paragon', rarity: 'paragon', element: 'divinity', secondaryElement: 'light', icon: '🌹', sound: 'primordial', particleEmoji: '🌹' },
+ { id: 'pg2', name: 'Crown of Dawn', rarity: 'paragon', element: 'light', secondaryElement: 'prime', icon: '🌅', sound: 'primordial', particleEmoji: '✨' },
+ { id: 'pg3', name: 'Starforged Oracle', rarity: 'paragon', element: 'cosmic', secondaryElement: 'divinity', icon: '🔭', sound: 'primordial', particleEmoji: '🌟' },
+ { id: 'pg4', name: 'Eternal Bloom', rarity: 'paragon', element: 'earth', secondaryElement: 'light', icon: '🌸', sound: 'primordial', particleEmoji: '🌸' },
+ { id: 'pg5', name: 'Sovereign Zenith', rarity: 'paragon', element: 'prime', secondaryElement: 'gods', icon: '💖', sound: 'primordial', particleEmoji: '💫' },
+ { id: 'ex1', name: 'Aurora Ember', rarity: 'exclusive', element: 'fire', secondaryElement: 'light', icon: '🌠', sound: 'primordial', particleEmoji: '🔥', coinPerSecond: 100, gemPerSecond: 1, eventCost: 10 },
+ { id: 'ex2', name: 'Moonlit Tide', rarity: 'exclusive', element: 'water', secondaryElement: 'dark', icon: '🌙', sound: 'primordial', particleEmoji: '🌊', coinPerSecond: 150, gemPerSecond: 2, eventCost: 15 },
+ { id: 'ex3', name: 'Solar Bloom', rarity: 'exclusive', element: 'light', secondaryElement: 'earth', icon: '🌻', sound: 'primordial', particleEmoji: '✨', coinPerSecond: 200, gemPerSecond: 5, eventCost: 20 },
+ { id: 'ex4', name: 'Storm Crown', rarity: 'exclusive', element: 'gods', secondaryElement: 'water', icon: '⚡', sound: 'god_all', particleEmoji: '⚡', coinPerSecond: 250, gemPerSecond: 8, eventCost: 25 },
+ { id: 'ex5', name: 'Obsidian Rose', rarity: 'exclusive', element: 'dark', secondaryElement: 'earth', icon: '🥀', sound: 'primordial', particleEmoji: '🌹', coinPerSecond: 300, gemPerSecond: 10, eventCost: 30 },
+ { id: 'ex6', name: 'Nebula Monarch', rarity: 'exclusive', element: 'cosmic', secondaryElement: 'prime', icon: '🪐', sound: 'cosmic', particleEmoji: '💫', coinPerSecond: 400, gemPerSecond: 15, eventCost: 40 },
+ { id: 'ex7', name: 'Frostfire Halo', rarity: 'exclusive', element: 'fire', secondaryElement: 'water', icon: '❄️', sound: 'god_all', particleEmoji: '❄️', coinPerSecond: 500, gemPerSecond: 20, eventCost: 50 },
+ { id: 'ex8', name: 'Verdant Oracle', rarity: 'exclusive', element: 'earth', secondaryElement: 'divinity', icon: '🍃', sound: 'founders', particleEmoji: '🍃', coinPerSecond: 650, gemPerSecond: 25, eventCost: 65 },
+ { id: 'ex9', name: 'Rift Seraph', rarity: 'exclusive', element: 'prime', secondaryElement: 'cosmic', icon: '🪽', sound: 'voidRiftTap', particleEmoji: '🌀', coinPerSecond: 800, gemPerSecond: 35, eventCost: 80 },
+ { id: 'ex10', name: 'Eternal Radiance', rarity: 'exclusive', element: 'divinity', secondaryElement: 'light', icon: '💎', sound: 'primordial', particleEmoji: '💎', coinPerSecond: 1000, gemPerSecond: 40, eventCost: 100 }
+ ,{ id: 'adv1', name: 'Ember Vanguard', rarity: 'adventure', element: 'fire', secondaryElement: 'earth', icon: '🐲', sound: 'magmaTap', particleEmoji: '🔥', coinPerSecond: 2500, gemPerSecond: 15, adventureStage: 1, damage: 25000 }
+ ,{ id: 'adv2', name: 'Frostbound Warden', rarity: 'adventure', element: 'water', secondaryElement: 'light', icon: '🐉', sound: 'aquaTap', particleEmoji: '❄️', coinPerSecond: 5000, gemPerSecond: 30, adventureStage: 2, damage: 75000 }
+ ,{ id: 'adv3', name: 'Celestial Sentinel', rarity: 'adventure', element: 'cosmic', secondaryElement: 'divinity', icon: '🌌', sound: 'cosmic', particleEmoji: '🌟', coinPerSecond: 10000, gemPerSecond: 60, adventureStage: 3, damage: 200000 }
+ ,{ id: 'adv4', name: 'Shadow Riftlord', rarity: 'adventure', element: 'dark', secondaryElement: 'prime', icon: '👁️', sound: 'voidRiftTap', particleEmoji: '🌑', coinPerSecond: 25000, gemPerSecond: 120, adventureStage: 4, damage: 600000 }
+ ,{ id: 'adv5', name: 'Primordial Conqueror', rarity: 'adventure', element: 'prime', secondaryElement: 'gods', icon: '🔱', sound: 'primordial', particleEmoji: '💠', coinPerSecond: 75000, gemPerSecond: 300, adventureStage: 5, damage: 2000000 }
+ ];
+
+ const DRAGON_VARIANTS = {
+  normal: { name: 'Normal', icon: '', multiplier: 1 },
+  shiny: { name: 'Shiny', icon: '✨', multiplier: 2 },
+  gold: { name: 'Gold', icon: '🥇', multiplier: 5 },
+  diamond: { name: 'Diamond', icon: '💎', multiplier: 12 }
+ };
+
+ const ACHIEVEMENTS = [
+ { id: 'ach1', title: 'Egg Crusher Extreme', desc: 'Tap the egg 10,000 times manually', rewardGems: 150, check: (s) => s.stats.totalTaps >= 10000 },
+ { id: 'ach2', title: 'Hoarder Lord', desc: 'Accumulate an Quadrillion total Coins', rewardGems: 100000, check: (s) => s.stats.totalCoinsEarned >= 1000000000000000 },
+ { id: 'ach3', title: 'Gem Monopoly', desc: 'Possess 1,000 Gems at once', rewardGems: 500, check: (s) => s.gems >= 1000 },
+ { id: 'ach4', title: 'Gacha Addict', desc: 'Summon 1,000 Dragons', rewardGems: 300, check: (s) => s.stats.totalSummons >= 1000 },
+ { id: 'ach5', title: 'Founding Dynasty', desc: 'Hatch your very first Founders Dragon', rewardGems: 1000, check: (s) => s.stats.foundersHatched >= 1 },
+ { id: 'ach6', title: 'Keeper of Secrets', desc: 'Hatch any Secret Rarity Dragon', rewardGems: 2500, check: (s) => s.stats.secretsHatched >= 1 },
+ { id: 'ach7', title: 'Cosmic Overlord CPS', desc: 'Reach 1,000,000 Coins Per Second', rewardGems: 750, check: (s) => calculateCPS() >= 1000000 },
+ { id: 'ach8', title: 'Dragon Collector Extreme', desc: 'Own 500 Dragons in your nest', rewardGems: 10000, check: (s) => Object.values(s.ownedDragons).reduce((a, b) => a + b, 0) >= 500 },
+ { id: 'ach9', title: 'Grand Founder', desc: 'Collect all 5 Founders Dragons', rewardGems: 3000, check: (s) => DRAGONS.filter(d => d.rarity === 'founders').every(d => s.ownedDragons[d.id] > 0) },
+ { id: 'ach10', title: 'Multiverse Architect', desc: 'Reach 50,000,000 Coins Per Second', rewardGems: 5000, check: (s) => calculateCPS() >= 50000000 }
+ ];
+
+ let activeSelectedDragon = null;
+ let autoSummonTimer = null;
+ let autoSummonCount = 0;
+ let hideSummonResults = false;
+ let paragonGemProgress = 0;
+
+ function getDefaultState() {
+ let defaultOwned = {};
+ DRAGONS.forEach(d => defaultOwned[d.id] = 0);
+ let defaultArtifacts = {};
+ ARTIFACTS.forEach(a => defaultArtifacts[a.id] = 0);
+
+ return {
+ rebirths: 0,
+ rebirthMultiplier: 1.0,
+ coins: 100,
+ gems: 20,
+ rebirthTokens: 0,
+ clickPower: 1,
+ clickUpgCost: 50,
+ nestMultiplier: 1.0,
+ nestUpgCost: 200,
+ critChance: 0,
+ critUpgCost: 150,
+ autoTappers: 0,
+ autoUpgCost: 300,
+ luckBoost: 0,
+ luckUpgCost: 500,
+ gemFindChance: 0,
+ gemFindUpgCost: 1000,
+ saleBonus: 1.0,
+ saleBoostUpgCost: 2500,
+ paragonMastery: 1.0,
+ paragonMasteryCost: 5000000,
+ dragonEvolution: {},
+ dragonFusion: {},
+ dragonSkills: {},
+ variantDragons: {},
+ summonTickets: { normal: 0, rare: 0, legendary: 0, element: 0 },
+ claimedEventTicketHours: {},
+ pity: { rare: 0, legendary: 0 },
+ summonHistory: [],
+ cosmeticsOwned: ['classic'],
+ activeCosmetic: 'classic',
+ dailyBonus: {
+ lastClaimDate: null,
+ streak: 0
+ },
+ dailyQuests: {
+ date: null,
+ progress: {},
+ claimed: {}
+ },
+ adventure: {
+  unlockedStage: 1,
+  clearedStages: {},
+  rewardedStages: {},
+  bossDamage: 0,
+  bossWeek: null
+ },
+ elementMultipliers: {
+ fire: 1.0,
+ water: 1.0,
+ earth: 1.0,
+ cosmic: 1.0,
+ divinity: 1.0,
+ gods: 1.0,
+ imaginative: 1.0,
+ light: 1.0,
+ dark: 1.0,
+ prime: 1.0
+ },
+ elementUpgCosts: {
+ fire: 500,
+ water: 500,
+ earth: 500,
+ cosmic: 1500,
+ divinity: 3000,
+ gods: 10000,
+ imaginative: 25000,
+ light: 50000,
+ dark: 50000,
+ prime: 100000
+ },
+ elixirTimer: 0,
+ superElixirTimer: 0,
+ ownedDragons: defaultOwned,
+ artifacts: defaultArtifacts,
+ unlockedAchievements: {},
+ stats: {
+ totalTaps: 0,
+ totalCoinsEarned: 100,
+ totalSummons: 0,
+ foundersHatched: 0,
+ secretsHatched: 0,
+ dragonGodsHatched: 0,
+ fictionHatched: 0,
+ primordialHatched: 0
+ }
+ };
+ }
+
+ let state = getDefaultState();
+
+ function formatCompactNumber(value) {
+ const suffixes = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
+ const absoluteValue = Math.abs(value);
+ if (absoluteValue < 1000) return Math.floor(value).toLocaleString();
+
+ const suffixIndex = Math.min(Math.floor(Math.log10(absoluteValue) / 3), suffixes.length - 1);
+ const scaledValue = value / Math.pow(1000, suffixIndex);
+ const decimals = scaledValue < 10 ? 2 : scaledValue < 100 ? 1 : 0;
+ return `${scaledValue.toFixed(decimals).replace(/\.?0+$/, '')}${suffixes[suffixIndex]}`;
+ }
+
+ function getDateKey(date = new Date()) {
+ return date.toISOString().slice(0, 10);
+ }
+
+ const DAILY_QUESTS = [
+  { id: 'tap-egg', title: 'Egg Training', description: 'Tap the egg 100 times', type: 'taps', target: 100, rewardCoins: 500, rewardGems: 5 },
+  { id: 'summon-dragons', title: 'Gather Allies', description: 'Summon 10 dragons', type: 'summons', target: 10, rewardCoins: 1000, rewardGems: 10 },
+  { id: 'earn-coins', title: 'Build the Hoard', description: 'Earn 10,000 coins', type: 'coins', target: 10000, rewardCoins: 2500, rewardGems: 15 }
+ ];
+
+ const ADVENTURE_STAGES = [
+  { id: 1, name: 'Ember Valley', icon: '🔥', requirement: 0 },
+  { id: 2, name: 'Frozen Isles', icon: '❄️', requirement: 5 },
+  { id: 3, name: 'Celestial Ruins', icon: '🌌', requirement: 10 },
+  { id: 4, name: 'Shadow Realm', icon: '🌑', requirement: 15 },
+  { id: 5, name: 'Primordial Core', icon: '💠', requirement: 25 }
+ ];
+
+ function getAdventureWeekKey() {
+  const date = new Date();
+  const firstDay = new Date(date.getFullYear(), 0, 1);
+  return `${date.getFullYear()}-${Math.ceil((((date - firstDay) / 86400000) + firstDay.getDay() + 1) / 7)}`;
+ }
+
+ function ensureAdventureState() {
+  if (!state.adventure) state.adventure = getDefaultState().adventure;
+  state.adventure.clearedStages = state.adventure.clearedStages || {};
+  state.adventure.rewardedStages = state.adventure.rewardedStages || {};
+  state.adventure.unlockedStage = Math.max(1, Math.min(ADVENTURE_STAGES.length, Number(state.adventure.unlockedStage) || 1));
+  const week = getAdventureWeekKey();
+  if (state.adventure.bossWeek !== week) {
+   state.adventure.bossWeek = week;
+   state.adventure.bossDamage = 0;
+  }
+   ADVENTURE_STAGES.forEach(stage => {
+    if (state.adventure.clearedStages[stage.id]) grantAdventureRewards(stage.id);
+   });
+ }
+
+ function grantAdventureRewards(stageId) {
+  const stage = ADVENTURE_STAGES.find(item => item.id === stageId);
+  const dragon = DRAGONS.find(item => item.adventureStage === stageId);
+  const cosmetic = COSMETICS.find(item => item.adventureStage === stageId);
+  if (!stage || !dragon || !cosmetic || state.adventure.rewardedStages[stageId]) return;
+  state.ownedDragons[dragon.id] = (state.ownedDragons[dragon.id] || 0) + 1;
+  if (!state.cosmeticsOwned.includes(cosmetic.id)) state.cosmeticsOwned.push(cosmetic.id);
+  state.adventure.rewardedStages[stageId] = true;
+  state.activeCosmetic = cosmetic.id;
+ }
+
+ function getAdventureUniqueDragonCount() {
+  return DRAGONS.filter(dragon => getDragonTotalCopies(dragon.id) > 0).length;
+ }
+
+ function renderAdventure() {
+  const map = document.getElementById('adventure-map');
+  if (!map) return;
+  ensureAdventureState();
+  const uniqueDragons = getAdventureUniqueDragonCount();
+  map.innerHTML = ADVENTURE_STAGES.map(stage => {
+   const cleared = !!state.adventure.clearedStages[stage.id];
+   const previousCleared = stage.id === 1 || !!state.adventure.clearedStages[stage.id - 1];
+   const unlocked = previousCleared && uniqueDragons >= stage.requirement;
+   return `<div class="shop-item ${cleared ? 'achievement-item completed' : ''}" style="border-color: ${unlocked ? 'var(--accent)' : '#475569'};">
+    <div class="item-info"><span class="item-title">${stage.icon} Stage ${stage.id}: ${stage.name} ${cleared ? '✓' : ''}</span><span class="item-desc">${unlocked ? `Reward: Adventure dragon + Exclusive Cosmetic` : `Requires ${stage.requirement} unique dragons and the previous stage cleared (${uniqueDragons} collected)`}</span></div>
+    <button class="btn ${!unlocked || cleared ? 'btn-disabled' : 'btn-gold'}" onclick="clearAdventureStage(${stage.id})" ${!unlocked || cleared ? 'disabled' : ''}>${cleared ? 'Cleared' : 'Explore'}</button>
+   </div>`;
+  }).join('');
+  const progress = document.getElementById('adventure-progress');
+  const nextStage = ADVENTURE_STAGES.find(stage => !state.adventure.clearedStages[stage.id]);
+  if (progress) progress.textContent = `${nextStage ? `Stage ${nextStage.id}` : 'Complete'} · ${uniqueDragons} unique`;
+  const bossFill = document.getElementById('boss-raid-fill');
+  const bossStatus = document.getElementById('boss-raid-status');
+  const bossMax = 1000000;
+  if (bossFill) bossFill.style.width = `${Math.min(100, (state.adventure.bossDamage / bossMax) * 100)}%`;
+  if (bossStatus) bossStatus.textContent = `Damage: ${formatCompactNumber(state.adventure.bossDamage)} / ${formatCompactNumber(bossMax)} · Team power: ${formatCompactNumber(calculateTotalDragonDamage())} DMG · Weekly rewards reset Monday.`;
+ }
+
+ function clearAdventureStage(stageId) {
+  ensureAdventureState();
+  const stage = ADVENTURE_STAGES.find(item => item.id === stageId);
+  const uniqueDragons = getAdventureUniqueDragonCount();
+  const previousCleared = stageId === 1 || !!state.adventure.clearedStages[stageId - 1];
+  if (!stage || !previousCleared || uniqueDragons < stage.requirement || state.adventure.clearedStages[stageId]) {
+   return alert(`Collect ${stage?.requirement || 0} unique dragons and clear the previous stage first.`);
+  }
+  state.adventure.clearedStages[stageId] = true;
+  state.adventure.unlockedStage = Math.min(ADVENTURE_STAGES.length, stageId + 1);
+  grantAdventureRewards(stageId);
+  playSound('founders');
+  saveGame();
+  renderAdventure();
+  updateUI();
+  const dragon = DRAGONS.find(item => item.adventureStage === stageId);
+  const cosmetic = COSMETICS.find(item => item.adventureStage === stageId);
+  alert(`${stage.name} cleared! Unlocked ${dragon.name} and ${cosmetic.name}. Both are permanent through rebirth.`);
+ }
+
+ function raidBoss() {
+  ensureAdventureState();
+  const damage = Math.max(100, Math.floor(calculateTotalDragonDamage() + state.clickPower * 10));
+  state.adventure.bossDamage = Math.min(1000000, state.adventure.bossDamage + damage);
+  state.coins += Math.floor(damage / 10);
+  if (state.adventure.bossDamage >= 1000000) {
+   state.gems += 100;
+   state.adventure.bossDamage = 0;
+   alert('Weekly boss defeated! +100 Gems.');
+  }
+  playSound('godly');
+  saveGame();
+  renderAdventure();
+  updateUI();
+ }
+
+ function ensureDailyQuests() {
+  const today = getDateKey();
+  if (!state.dailyQuests || state.dailyQuests.date !== today) {
+   state.dailyQuests = { date: today, progress: {}, claimed: {} };
+   saveGame();
+  }
+ }
+
+ function getDailyQuestProgress(quest) {
+  ensureDailyQuests();
+  return Math.min(quest.target, state.dailyQuests.progress[quest.id] || 0);
+ }
+
+ function recordQuestProgress(type, amount) {
+  if (!amount || amount < 0) return;
+  ensureDailyQuests();
+  let changed = false;
+  DAILY_QUESTS.filter(quest => quest.type === type).forEach(quest => {
+   const nextProgress = Math.min(
+    quest.target,
+    (state.dailyQuests.progress[quest.id] || 0) + amount
+   );
+   if (nextProgress !== state.dailyQuests.progress[quest.id]) {
+    state.dailyQuests.progress[quest.id] = nextProgress;
+    changed = true;
+   }
+  });
+  if (changed) renderDailyQuests();
+ }
+
+ function claimDailyQuest(id) {
+  ensureDailyQuests();
+  const quest = DAILY_QUESTS.find(item => item.id === id);
+  if (!quest || state.dailyQuests.claimed[id]) return;
+  if (getDailyQuestProgress(quest) < quest.target) return alert('Complete the quest first!');
+
+  state.dailyQuests.claimed[id] = true;
+  state.coins += quest.rewardCoins;
+  state.gems += quest.rewardGems;
+  playSound('founders');
+  saveGame();
+  renderDailyQuests();
+  updateUI();
+  alert(`${quest.title} complete! +${quest.rewardCoins.toLocaleString()} Coins and +${quest.rewardGems} Gems.`);
+ }
+
+ function renderDailyQuests() {
+  const container = document.getElementById('daily-quests-list');
+  if (!container) return;
+  ensureDailyQuests();
+  let completed = 0;
+  container.innerHTML = DAILY_QUESTS.map(quest => {
+   const progress = getDailyQuestProgress(quest);
+   const claimed = !!state.dailyQuests.claimed[quest.id];
+   if (claimed) completed += 1;
+   const percent = Math.round((progress / quest.target) * 100);
+   return `<div class="shop-item ${claimed ? 'achievement-item completed' : ''}">
+    <div class="item-info">
+     <span class="item-title">${claimed ? '✅ ' : ''}${quest.title}</span>
+     <span class="item-desc">${quest.description} · Reward: ${quest.rewardCoins.toLocaleString()} Coins + ${quest.rewardGems} Gems</span>
+     <div class="pity-meter"><div class="pity-meter-fill" style="width: ${percent}%; background: var(--gold);"></div></div>
+     <span class="item-desc">${progress.toLocaleString()} / ${quest.target.toLocaleString()}</span>
+    </div>
+    <button class="btn ${claimed || progress < quest.target ? 'btn-disabled' : 'btn-gold'}" onclick="claimDailyQuest('${quest.id}')" ${claimed || progress < quest.target ? 'disabled' : ''}>${claimed ? 'Claimed' : 'Claim'}</button>
+   </div>`;
+  }).join('');
+  const count = document.getElementById('quest-completion-count');
+  if (count) count.textContent = `${completed} / ${DAILY_QUESTS.length}`;
+ }
+
+ function isConsecutiveDay(previousDate, currentDate) {
+ const prev = new Date(previousDate + 'T00:00:00');
+ const curr = new Date(currentDate + 'T00:00:00');
+ return (curr.getTime() - prev.getTime()) === 86400000;
+ }
+
+ function claimDailyBonus() {
+ const today = getDateKey();
+ const lastClaim = state.dailyBonus?.lastClaimDate;
+ const streak = state.dailyBonus?.streak || 0;
+
+ if (lastClaim === today) {
+ return alert('You already claimed today\'s blessing. Come back tomorrow!');
+ }
+
+ const nextStreak = lastClaim && isConsecutiveDay(lastClaim, today) ? streak + 1 : 1;
+ const rewardCoins = 250 + nextStreak * 100;
+ const rewardGems = 10 + nextStreak * 5;
+
+ state.coins += rewardCoins;
+ state.gems += rewardGems;
+ state.dailyBonus = {
+ lastClaimDate: today,
+ streak: nextStreak
+ };
+
+ playSound('founders');
+ saveGame();
+ updateUI();
+ alert(`Daily Blessing claimed! +${rewardCoins.toLocaleString()} Coins and +${rewardGems} Gems.`);
+ }
+
+ function saveGame() {
+ localStorage.setItem('dragon_gacha_save', JSON.stringify(state));
+ }
+
+ function loadGame() {
+ const savedData = localStorage.getItem('dragon_gacha_save');
+ if (savedData) {
+ try {
+ const parsed = JSON.parse(savedData);
+ state = { ...getDefaultState(), ...parsed };
+ state.stats = { ...getDefaultState().stats, ...(parsed.stats || {}) };
+ state.elementMultipliers = { ...getDefaultState().elementMultipliers, ...(parsed.elementMultipliers || {}) };
+ state.elementUpgCosts = { ...getDefaultState().elementUpgCosts, ...(parsed.elementUpgCosts || {}) };
+ state.artifacts = { ...getDefaultState().artifacts, ...(parsed.artifacts || {}) };
+ state.dragonEvolution = { ...getDefaultState().dragonEvolution, ...(parsed.dragonEvolution || {}) };
+ state.dragonFusion = { ...getDefaultState().dragonFusion, ...(parsed.dragonFusion || {}) };
+ state.dragonSkills = { ...getDefaultState().dragonSkills, ...(parsed.dragonSkills || {}) };
+ state.variantDragons = { ...getDefaultState().variantDragons, ...(parsed.variantDragons || {}) };
+ state.summonTickets = { ...getDefaultState().summonTickets, ...(parsed.summonTickets || {}) };
+ state.claimedEventTicketHours = { ...(parsed.claimedEventTicketHours || {}) };
+ state.pity = { ...getDefaultState().pity, ...(parsed.pity || {}) };
+ state.summonHistory = Array.isArray(parsed.summonHistory) ? parsed.summonHistory.slice(0, 50) : [];
+ state.rebirthTokens = Number.isFinite(parsed.rebirthTokens) ? parsed.rebirthTokens : 0;
+ state.cosmeticsOwned = parsed.cosmeticsOwned || ['classic'];
+ state.activeCosmetic = parsed.activeCosmetic || 'classic';
+ state.dailyBonus = { ...getDefaultState().dailyBonus, ...(parsed.dailyBonus || {}) };
+ state.dailyQuests = {
+  ...getDefaultState().dailyQuests,
+  ...(parsed.dailyQuests || {}),
+  progress: { ...(parsed.dailyQuests?.progress || {}) },
+  claimed: { ...(parsed.dailyQuests?.claimed || {}) }
+ };
+ state.adventure = { ...getDefaultState().adventure, ...(parsed.adventure || {}), clearedStages: { ...(parsed.adventure?.clearedStages || {}) }, rewardedStages: { ...(parsed.adventure?.rewardedStages || {}) } };
+ state.unlockedAchievements = parsed.unlockedAchievements || {};
+ DRAGONS.forEach(d => {
+ if (state.ownedDragons[d.id] === undefined) {
+ state.ownedDragons[d.id] = 0;
+ }
+ });
+ } catch (e) {
+ console.error("Failed to load save file.", e);
+ }
+ }
+ }
+
+ function resetProgress() {
+ if (confirm("Are you sure you want to reset all game progress? This cannot be undone!")) {
+ localStorage.removeItem('dragon_gacha_save');
+ state = getDefaultState();
+ updateUI();
+ renderCollection();
+ renderSummonHistory();
+ renderSummonTickets();
+ renderArtifacts();
+ renderAchievements();
+ alert("Game progress reset successfully!");
+ }
+ }
+
+ function doRebirth() {
+ const reqCoins = 1000000 * Math.pow(2, state.rebirths);
+ if (state.coins < reqCoins) {
+ return alert(`You need ${reqCoins.toLocaleString()} Coins to Rebirth!`);
+ }
+
+ if (confirm("Are you sure you want to Rebirth? This resets coins, gems, and normal dragons, but keeps Exclusive dragons and grants a permanent +100% boost that increases with every rebirth. Rebirth Tokens are kept!")) {
+ const currentRebirths = state.rebirths + 1;
+ const currentMult = 1 + currentRebirths;
+ const currentTokens = state.rebirthTokens + currentRebirths * 10;
+ const currentStats = { ...state.stats };
+ const currentAchievements = { ...state.unlockedAchievements };
+ const currentArtifacts = { ...state.artifacts };
+ const currentAdventure = { ...state.adventure, clearedStages: { ...(state.adventure?.clearedStages || {}) }, rewardedStages: { ...(state.adventure?.rewardedStages || {}) } };
+ const permanentDragonIds = DRAGONS.filter(dragon => dragon.rarity === 'exclusive' || dragon.rarity === 'adventure').map(dragon => dragon.id);
+ const exclusiveOwnedDragons = {};
+ const exclusiveVariantDragons = {};
+ const exclusiveEvolution = {};
+ const exclusiveFusion = {};
+ const exclusiveSkills = {};
+ permanentDragonIds.forEach(dragonId => {
+  exclusiveOwnedDragons[dragonId] = state.ownedDragons[dragonId] || 0;
+  if (state.variantDragons[dragonId]) exclusiveVariantDragons[dragonId] = { ...state.variantDragons[dragonId] };
+  if (state.dragonEvolution[dragonId]) exclusiveEvolution[dragonId] = state.dragonEvolution[dragonId];
+  if (state.dragonFusion[dragonId]) exclusiveFusion[dragonId] = state.dragonFusion[dragonId];
+  if (state.dragonSkills[dragonId]) exclusiveSkills[dragonId] = { ...state.dragonSkills[dragonId] };
+ });
+
+ state = getDefaultState();
+ state.rebirths = currentRebirths;
+ state.rebirthMultiplier = currentMult;
+ state.rebirthTokens = currentTokens;
+ state.artifacts = currentArtifacts;
+ state.stats = currentStats;
+ state.unlockedAchievements = currentAchievements;
+ state.adventure = currentAdventure;
+ Object.assign(state.ownedDragons, exclusiveOwnedDragons);
+ state.variantDragons = exclusiveVariantDragons;
+ state.dragonEvolution = exclusiveEvolution;
+ state.dragonFusion = exclusiveFusion;
+ state.dragonSkills = exclusiveSkills;
+ state.cosmeticsOwned = [...new Set(['classic', ...state.cosmeticsOwned.filter(cosmeticId => {
+  const cosmetic = COSMETICS.find(item => item.id === cosmeticId);
+  return cosmetic && (cosmetic.id === 'classic' || cosmetic.tier === 'Adventure Exclusive');
+ })])];
+ state.activeCosmetic = state.cosmeticsOwned.includes(state.activeCosmetic) ? state.activeCosmetic : 'classic';
+
+ playSound('secret');
+ saveGame();
+ updateUI();
+ renderCollection();
+ renderArtifacts();
+ renderAchievements();
+ alert("Rebirth Successful! Title & Multiplier Updated!");
+ }
+ }
+
+ function getArtifactClickPower() {
+ let bonus = 0;
+ ARTIFACTS.forEach(art => {
+ const lvl = state.artifacts[art.id] || 0;
+ bonus += art.clickBoost * lvl;
+ });
+ return bonus;
+ }
+
+ function getArtifactCPSMultiplier() {
+ let mult = 1.0;
+ ARTIFACTS.forEach(art => {
+ const lvl = state.artifacts[art.id] || 0;
+ mult += art.cpsBoost * lvl;
+ });
+ return mult;
+ }
+
+ function getArtifactLuckBonus() {
+ let luck = 0;
+ ARTIFACTS.forEach(art => {
+ const lvl = state.artifacts[art.id] || 0;
+ luck += art.luckBoost * lvl;
+ });
+ return luck;
+ }
+
+ function getArtifactGemMultiplier() {
+ let multiplier = 1.0;
+ ARTIFACTS.forEach(art => {
+  const level = state.artifacts[art.id] || 0;
+  multiplier += (art.gemBoost || 0) * level;
+ });
+ return multiplier;
+ }
+
+ function clickEgg() {
+ const selectedSkin = COSMETICS.find(item => item.id === state.activeCosmetic) || COSMETICS[0];
+ let totalClickPower = state.clickPower + getArtifactClickPower();
+ let gains = totalClickPower * state.rebirthMultiplier * selectedSkin.multiplier;
+ let isCrit = Math.random() < state.critChance;
+
+ if (isCrit) {
+ gains *= 5;
+ playSound('crit');
+ } else {
+ playSound(selectedSkin.sound || 'tap');
+ }
+
+ state.coins += gains;
+ state.stats.totalCoinsEarned += gains;
+ state.stats.totalTaps += 1;
+ recordQuestProgress('taps', 1);
+ recordQuestProgress('coins', gains);
+
+ if (state.gemFindChance > 0 && Math.random() < state.gemFindChance) {
+ state.gems += 1;
+ }
+
+ const egg = document.getElementById('egg');
+ spawnCosmeticParticles(selectedSkin.particle || '✨');
+ if (egg) {
+ egg.style.transform = isCrit ? 'scale(1.3) rotate(5deg)' : 'scale(1.15)';
+ setTimeout(() => egg.style.transform = 'scale(1)', 80);
+ }
+ checkAchievements();
+ saveGame();
+ updateUI();
+ }
+
+ function getDragonVariantCount(dragonId, variant) {
+ return variant === 'normal' ? (state.ownedDragons[dragonId] || 0) : (state.variantDragons[dragonId]?.[variant] || 0);
+ }
+
+ function getDragonVariantPower(dragonId) {
+ return Object.entries(DRAGON_VARIANTS).reduce((total, [variant, data]) => total + getDragonVariantCount(dragonId, variant) * data.multiplier, 0);
+ }
+
+ function getDragonTotalCopies(dragonId) {
+ return Object.keys(DRAGON_VARIANTS).reduce((total, variant) => total + getDragonVariantCount(dragonId, variant), 0);
+ }
+
+ function setDragonVariantCount(dragonId, variant, amount) {
+ if (variant === 'normal') {
+  state.ownedDragons[dragonId] = amount;
+  return;
+ }
+ if (!state.variantDragons[dragonId]) state.variantDragons[dragonId] = {};
+ state.variantDragons[dragonId][variant] = amount;
+ }
+
+ function combineDragonVariant(dragonId, fromVariant, toVariant) {
+ const fromCount = getDragonVariantCount(dragonId, fromVariant);
+ if (fromCount < 3) return alert(`You need 3 ${DRAGON_VARIANTS[fromVariant].name} copies to create a ${DRAGON_VARIANTS[toVariant].name} dragon.`);
+ setDragonVariantCount(dragonId, fromVariant, fromCount - 3);
+ setDragonVariantCount(dragonId, toVariant, getDragonVariantCount(dragonId, toVariant) + 1);
+ saveGame();
+ renderCollection();
+ updateUI();
+ const dragon = DRAGONS.find(item => item.id === dragonId);
+ if (dragon) showReveal(dragon, toVariant);
+ }
+
+ function addSummonHistory(dragon, variant = 'normal') {
+ state.summonHistory.unshift({ name: dragon.name, icon: dragon.icon, rarity: RARITIES[dragon.rarity].name, rarityId: dragon.rarity, variant, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+ state.summonHistory = state.summonHistory.slice(0, 50);
+ }
+
+ function clearSummonHistory() {
+ state.summonHistory = [];
+ saveGame();
+ renderSummonHistory();
+ }
+
+ function renderSummonHistory() {
+ const list = document.getElementById('summon-history-list');
+ if (!list) return;
+ const search = (document.getElementById('history-search')?.value || '').trim().toLowerCase();
+ const rarityFilter = document.getElementById('history-rarity-filter')?.value || 'all';
+ const variantFilter = document.getElementById('history-variant-filter')?.value || 'all';
+ const rarityOrder = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'heroic', 'godly', 'cosmic', 'unknown', 'founders', 'secret', 'dragongod', 'fiction', 'primordial', 'omnipotent', 'paragon', 'exclusive'];
+ const filtered = state.summonHistory.filter(entry => {
+  const rarityId = entry.rarityId || entry.rarity.toLowerCase();
+  const rarityMatches = rarityFilter === 'all' || (rarityFilter === 'common' ? rarityId === 'common' : rarityFilter === 'rare' ? rarityOrder.indexOf(rarityId) >= rarityOrder.indexOf('rare') : rarityFilter === 'legendary' ? rarityOrder.indexOf(rarityId) >= rarityOrder.indexOf('legendary') : rarityId === 'exclusive');
+  const variantMatches = variantFilter === 'all' || (entry.variant || 'normal') === variantFilter;
+  return rarityMatches && variantMatches && (!search || entry.name.toLowerCase().includes(search));
+ });
+ const count = document.getElementById('summon-history-count');
+ if (count) count.textContent = `${filtered.length} / ${state.summonHistory.length}`;
+ list.innerHTML = filtered.length ? filtered.map(entry => `<div class="history-entry"><span class="history-entry-icon">${entry.icon}</span><div class="item-info"><span class="item-title">${entry.variant !== 'normal' ? `${DRAGON_VARIANTS[entry.variant]?.icon || ''} ` : ''}${entry.name}</span><span class="item-desc">${entry.rarity} · ${entry.timestamp}</span></div></div>`).join('') : '<div style="font-size: 10px; color: #64748b; text-align: center; padding: 10px;">No matching summons.</div>';
+ }
+
+ function calculateCPS() {
+ let baseCps = 0;
+ DRAGONS.forEach(d => {
+ const count = state.ownedDragons[d.id] || 0;
+ const variantPower = getDragonVariantPower(d.id);
+ if (variantPower > 0) {
+ let elemMult = state.elementMultipliers[d.element] || 1.0;
+ const evoMult = getDragonEvolutionMultiplier(d.id);
+ const fusionMult = getDragonFusionMultiplier(d.id);
+ 
+ // Double Affinity Boost for Founders and above
+ if (d.secondaryElement) {
+ const secMult = state.elementMultipliers[d.secondaryElement] || 1.0;
+ // Double boost applied when upgraded
+ elemMult = (elemMult + secMult);
+ }
+ elemMult += getDragonSkillAffinityBonus(d.id);
+
+ const coinRate = (d.rarity === 'exclusive' || d.rarity === 'adventure') ? (d.coinPerSecond || 0) : RARITIES[d.rarity].cps;
+ baseCps += variantPower * coinRate * elemMult * evoMult * fusionMult * getDragonSkillPowerMultiplier(d.id);
+ }
+ });
+
+ let artifactMult = getArtifactCPSMultiplier();
+ let finalCps = Math.floor(baseCps * state.nestMultiplier * state.rebirthMultiplier * artifactMult);
+ if (state.superElixirTimer > 0) finalCps *= 5;
+ else if (state.elixirTimer > 0) finalCps *= 2;
+
+ const selectedSkin = COSMETICS.find(item => item.id === state.activeCosmetic) || COSMETICS[0];
+ return Math.floor(finalCps * selectedSkin.multiplier);
+ }
+
+ function calculateGPS() {
+ let gemsPerSecond = 0;
+ DRAGONS.forEach(dragon => {
+  if (dragon.rarity === 'paragon' || dragon.rarity === 'exclusive' || dragon.rarity === 'adventure') {
+    const count = state.ownedDragons[dragon.id] || 0;
+    const variantPower = getDragonVariantPower(dragon.id);
+    let affinityMultiplier = state.elementMultipliers[dragon.element] || 1.0;
+    if (dragon.secondaryElement) {
+    affinityMultiplier += state.elementMultipliers[dragon.secondaryElement] || 1.0;
+    }
+    affinityMultiplier += getDragonSkillAffinityBonus(dragon.id);
+    const evolutionMultiplier = getDragonEvolutionMultiplier(dragon.id);
+    const fusionMultiplier = getDragonFusionMultiplier(dragon.id);
+    const gemRate = (dragon.rarity === 'exclusive' || dragon.rarity === 'adventure') ? (dragon.gemPerSecond || 0) : (RARITIES.paragon.gemPerSecond || 0);
+    gemsPerSecond += variantPower * gemRate * affinityMultiplier * evolutionMultiplier * fusionMultiplier * getDragonSkillPowerMultiplier(dragon.id);
+  }
+ });
+ const selectedSkin = COSMETICS.find(item => item.id === state.activeCosmetic) || COSMETICS[0];
+ return gemsPerSecond * state.rebirthMultiplier * state.paragonMastery * getArtifactGemMultiplier() * selectedSkin.multiplier;
+ }
+
+ function spawnCosmeticParticles(particle) {
+ const egg = document.getElementById('egg');
+ if (!egg) return;
+ const rect = egg.getBoundingClientRect();
+ for (let index = 0; index < 4; index += 1) {
+  const particleEl = document.createElement('div');
+  particleEl.className = 'floating-emoji';
+  particleEl.textContent = particle;
+  particleEl.style.left = `${rect.left + rect.width / 2 + Math.random() * 36 - 18}px`;
+  particleEl.style.top = `${rect.top + rect.height / 2 + Math.random() * 24 - 12}px`;
+  document.body.appendChild(particleEl);
+  setTimeout(() => particleEl.remove(), 1200);
+ }
+ }
+
+ function summon(count, forcePool = null) {
+ const cost = count * 10;
+ if (!forcePool && state.gems < cost) return alert('Not enough Gems!');
+
+ if (!forcePool) state.gems -= cost;
+ state.stats.totalSummons += count;
+ recordQuestProgress('summons', count);
+ let lastPulled = null;
+ const pulledDragons = [];
+
+ for (let i = 0; i < count; i++) {
+ let pityPool = forcePool;
+ if (!forcePool) {
+  if ((state.pity.legendary || 0) >= 49) pityPool = 'legendary+';
+  else if ((state.pity.rare || 0) >= 9) pityPool = 'rare+';
+ }
+ const pulled = rollGacha(pityPool);
+ pulledDragons.push(pulled);
+ state.ownedDragons[pulled.id] = (state.ownedDragons[pulled.id] || 0) + 1;
+ lastPulled = pulled;
+ addSummonHistory(pulled);
+ if (!forcePool) {
+  state.pity.rare = ['rare', 'epic', 'legendary', 'heroic', 'godly', 'cosmic', 'unknown', 'founders', 'secret', 'dragongod', 'fiction', 'primordial', 'omnipotent', 'paragon'].includes(pulled.rarity) ? 0 : (state.pity.rare || 0) + 1;
+  state.pity.legendary = ['legendary', 'heroic', 'godly', 'cosmic', 'unknown', 'founders', 'secret', 'dragongod', 'fiction', 'primordial', 'omnipotent', 'paragon'].includes(pulled.rarity) ? 0 : (state.pity.legendary || 0) + 1;
+ }
+
+ if (pulled.rarity === 'founders') state.stats.foundersHatched += 1;
+ if (pulled.rarity === 'secret') state.stats.secretsHatched += 1;
+ if (pulled.rarity === 'dragongod') state.stats.dragonGodsHatched += 1;
+ if (pulled.rarity === 'fiction') state.stats.fictionHatched += 1;
+ if (pulled.rarity === 'primordial') state.stats.primordialHatched += 1;
+ }
+
+ if (!hideSummonResults && lastPulled.rarity === 'primordial') {
+ playSound('primordial');
+ spawnEmojiParticles(lastPulled.particleEmoji || '💠', window.innerWidth / 2, window.innerHeight / 2);
+ } else if (!hideSummonResults && lastPulled.rarity === 'fiction') {
+ playSound('fiction');
+ spawnEmojiParticles(lastPulled.particleEmoji || '✨', window.innerWidth / 2, window.innerHeight / 2);
+ } else if (!hideSummonResults && lastPulled.rarity === 'dragongod') {
+ playSound(lastPulled.sound || 'god_all');
+ spawnEmojiParticles(lastPulled.particleEmoji || '⚡', window.innerWidth / 2, window.innerHeight / 2);
+ } else if (!hideSummonResults && lastPulled.rarity === 'secret') playSound('secret');
+ else if (!hideSummonResults && lastPulled.rarity === 'founders') playSound('founders');
+ else if (!hideSummonResults && lastPulled.rarity === 'unknown') playSound('unknown');
+ else if (!hideSummonResults && lastPulled.rarity === 'cosmic') playSound('cosmic');
+ else if (!hideSummonResults && lastPulled.rarity === 'godly') playSound('godly');
+ else if (!hideSummonResults) playSound('summon');
+
+ if (!hideSummonResults) {
+  if (count > 1) showBatchReveal(pulledDragons);
+  else showReveal(lastPulled);
+ }
+ checkAchievements();
+ saveGame();
+ updateUI();
+ renderCollection();
+ renderSummonHistory();
+ }
+
+ function summonWithTicket(ticketType) {
+ const ticket = SUMMON_TICKET_TYPES[ticketType];
+ if (!ticket || (state.summonTickets[ticketType] || 0) < 1) {
+  return alert(`You do not have a ${ticket?.name || 'Summon'} Ticket.`);
+ }
+ state.summonTickets[ticketType] -= 1;
+ summon(1, ticket.pool);
+ renderSummonTickets();
+ }
+
+ function renderSummonTickets() {
+ const container = document.getElementById('summon-ticket-list');
+ if (!container) return;
+ container.innerHTML = Object.entries(SUMMON_TICKET_TYPES).map(([id, ticket]) => {
+  const count = state.summonTickets[id] || 0;
+  return `<button class="btn ${count ? 'btn-purple' : 'btn-disabled'}" onclick="summonWithTicket('${id}')" ${count ? '' : 'disabled'}>${ticket.icon} ${ticket.name} <strong>x${count}</strong></button>`;
+ }).join('');
+ }
+
+ function toggleAutoSummon(count) {
+ if (autoSummonTimer) {
+ if (autoSummonCount === count) {
+ stopAutoSummon();
+ return;
+ }
+ stopAutoSummon();
+ }
+
+ autoSummonCount = count;
+ const cost = count * 10;
+ const status = document.getElementById('auto-summon-status');
+ const stopButton = document.getElementById('stop-auto-summon');
+ if (state.gems < cost) {
+ alert(`You need ${cost} Gems to auto summon x${count}.`);
+ return;
+ }
+
+ const runBatch = () => {
+ if (state.gems < cost) {
+ stopAutoSummon();
+ alert('Auto summon stopped: not enough Gems.');
+ return;
+ }
+ summon(count);
+ };
+
+ runBatch();
+ autoSummonTimer = setInterval(runBatch, 1000);
+ if (status) status.textContent = `Auto x${count} running - ${cost} Gems each second`;
+ if (stopButton) {
+ stopButton.disabled = false;
+ stopButton.className = 'btn btn-danger';
+ }
+ }
+
+ function stopAutoSummon() {
+ if (autoSummonTimer) {
+ clearInterval(autoSummonTimer);
+ autoSummonTimer = null;
+ }
+ autoSummonCount = 0;
+ const status = document.getElementById('auto-summon-status');
+ const stopButton = document.getElementById('stop-auto-summon');
+ if (status) status.textContent = 'Auto summon off';
+ if (stopButton) {
+ stopButton.disabled = true;
+ stopButton.className = 'btn btn-disabled';
+ }
+ }
+
+ function toggleSummonResults() {
+ hideSummonResults = !hideSummonResults;
+ const toggle = document.getElementById('summon-result-toggle');
+ if (hideSummonResults) {
+ closeReveal();
+ }
+ if (toggle) {
+ toggle.textContent = `Hide Results + Sound: ${hideSummonResults ? 'On' : 'Off'}`;
+ toggle.className = hideSummonResults ? 'btn btn-gold' : 'btn btn-disabled';
+ }
+ }
+
+ function getActiveSeasonalEvent(date = new Date()) {
+ const hourIndex = Math.floor(date.getTime() / 3600000);
+ return SEASONAL_EVENTS[hourIndex % SEASONAL_EVENTS.length];
+ }
+
+ function getEventHourKey(date = new Date()) {
+ return `${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}-${date.getUTCHours()}`;
+ }
+
+ function claimHourlyEventTickets() {
+ const eventProgress = Math.min(100, Math.floor((state.stats.totalSummons + state.stats.totalTaps) % 101));
+ const hourKey = getEventHourKey();
+ if (eventProgress < 100) return alert('Fill the Hourly Event meter to 100 first.');
+ if (state.claimedEventTicketHours[hourKey]) return alert('This hour\'s festival tickets have already been claimed.');
+ state.summonTickets.normal += 30;
+ state.summonTickets.rare += 25;
+ state.summonTickets.legendary += 20;
+ state.summonTickets.element += 15;
+ state.claimedEventTicketHours[hourKey] = true;
+ playSound('founders');
+ saveGame();
+ renderSeasonalEvent();
+ renderSummonTickets();
+ updateUI();
+ alert('Festival tickets claimed! +30 Normal, +25 Rare, +20 Legendary, +15 Element.');
+ }
+
+ function renderSeasonalEvent() {
+ const event = getActiveSeasonalEvent();
+ const status = document.getElementById('seasonal-event-status');
+ const container = document.getElementById('seasonal-event-egg');
+ if (!status || !container) return;
+
+ const millisecondsLeft = 3600000 - (Date.now() % 3600000);
+ const minutesLeft = Math.floor(millisecondsLeft / 60000);
+ const secondsLeft = Math.floor((millisecondsLeft % 60000) / 1000);
+ status.textContent = `${event.name} Egg - changes in ${minutesLeft}m ${String(secondsLeft).padStart(2, '0')}s`;
+ const eventCountdown = document.getElementById('event-countdown');
+ const eventFill = document.getElementById('event-progress-fill');
+ const eventLabel = document.getElementById('event-progress-label');
+ const eventProgress = Math.min(100, Math.floor((state.stats.totalSummons + state.stats.totalTaps) % 101));
+ if (eventCountdown) eventCountdown.textContent = `${event.name} Festival · ${minutesLeft}m ${String(secondsLeft).padStart(2, '0')}s remaining · Summon or tap to fill the event meter.`;
+ if (eventFill) eventFill.style.width = `${eventProgress}%`;
+ if (eventLabel) eventLabel.textContent = `${eventProgress} / 100`;
+ const ticketButton = document.getElementById('claim-event-tickets-btn');
+ const ticketStatus = document.getElementById('event-ticket-status');
+ const claimed = !!state.claimedEventTicketHours[getEventHourKey()];
+ if (ticketButton) {
+  ticketButton.disabled = claimed || eventProgress < 100;
+  ticketButton.className = claimed || eventProgress < 100 ? 'btn btn-disabled' : 'btn btn-purple';
+  ticketButton.textContent = claimed ? 'Claimed' : 'Claim Tickets';
+ }
+ if (ticketStatus) ticketStatus.textContent = claimed ? 'This hour\'s ticket bundle has been claimed.' : `${eventProgress}% complete · Reward: 30 Normal, 25 Rare, 20 Legendary, 15 Element Tickets.`;
+ container.innerHTML = `
+ <div class="shop-item" style="border-color: ${event.color};">
+ <div style="font-size: 42px; margin-right: 8px;">${event.egg}</div>
+ <div class="item-info">
+ <span class="item-title" style="color: ${event.color};">${event.name} Egg</span>
+ <span class="item-desc">Guaranteed ${RARITIES[event.rarity].name} dragon</span>
+ </div>
+ <button class="btn btn-gold" onclick="buySeasonalEgg()">${event.price.toLocaleString()} Gems</button>
+ </div>`;
+ }
+
+ function buySeasonalEgg() {
+ const event = getActiveSeasonalEvent();
+ if (state.gems < event.price) {
+ alert(`You need ${event.price.toLocaleString()} Gems for the ${event.name} Egg.`);
+ return;
+ }
+ state.gems -= event.price;
+ summon(1, event.rarity);
+ renderSeasonalEvent();
+ }
+
+ function buyExclusiveDragon(dragonId) {
+ const dragon = DRAGONS.find(item => item.id === dragonId && item.rarity === 'exclusive');
+ if (!dragon) return;
+ if (state.rebirthTokens < dragon.eventCost) {
+  alert(`You need ${dragon.eventCost} Rebirth Tokens for ${dragon.name}.`);
+  return;
+ }
+ state.rebirthTokens -= dragon.eventCost;
+ state.ownedDragons[dragon.id] = (state.ownedDragons[dragon.id] || 0) + 1;
+ state.stats.totalSummons += 1;
+ addSummonHistory(dragon);
+ playSound(dragon.sound || 'founders');
+ if (!hideSummonResults) showReveal(dragon);
+ checkAchievements();
+ saveGame();
+ updateUI();
+ renderCollection();
+ renderExclusiveDragons();
+ }
+
+ function renderExclusiveDragons() {
+ const list = document.getElementById('exclusive-dragon-list');
+ const balance = document.getElementById('exclusive-token-balance');
+ if (!list) return;
+ if (balance) balance.textContent = `${formatCompactNumber(state.rebirthTokens)} Tokens`;
+ list.innerHTML = DRAGONS.filter(dragon => dragon.rarity === 'exclusive').map(dragon => `
+ <div class="shop-item" style="border-color: var(--exclusive);">
+ <div style="font-size: 32px; margin-right: 8px;">${dragon.icon}</div>
+ <div class="item-info">
+ <span class="item-title" style="color: var(--exclusive);">${dragon.name}</span>
+ <span class="item-desc">Exclusive · +${formatCompactNumber(dragon.coinPerSecond)} Coins/sec · +${dragon.gemPerSecond} Gems/sec</span>
+ </div>
+ <button class="btn btn-gold" onclick="buyExclusiveDragon('${dragon.id}')">${dragon.eventCost} Tokens</button>
+ </div>`).join('');
+ }
+
+ function rollGacha(forcePool = null) {
+ if (forcePool === 'element') {
+  const elementKeys = Object.keys(ELEMENTS);
+  const element = elementKeys[Math.floor(Math.random() * elementKeys.length)];
+  const pool = DRAGONS.filter(d => d.element === element || d.secondaryElement === element);
+  return pool[Math.floor(Math.random() * pool.length)] || rollGacha(null);
+ }
+ if (SEASONAL_EVENTS.some(event => event.rarity === forcePool)) {
+ const pool = DRAGONS.filter(d => d.rarity === forcePool);
+ return pool[Math.floor(Math.random() * pool.length)];
+ }
+ if (forcePool === 'legendary+') {
+ const pool = DRAGONS.filter(d => ['legendary', 'heroic', 'godly', 'cosmic', 'unknown', 'founders', 'secret', 'dragongod', 'fiction', 'primordial', 'omnipotent'].includes(d.rarity));
+ return pool[Math.floor(Math.random() * pool.length)];
+ } else if (forcePool === 'godly+') {
+ const pool = DRAGONS.filter(d => ['godly', 'cosmic', 'unknown', 'founders', 'secret', 'dragongod', 'fiction', 'primordial', 'omnipotent'].includes(d.rarity));
+ return pool[Math.floor(Math.random() * pool.length)];
+ } else if (forcePool === 'unknown+') {
+ const pool = DRAGONS.filter(d => ['unknown', 'founders', 'secret', 'dragongod', 'fiction', 'primordial', 'omnipotent', 'paragon'].includes(d.rarity));
+ return pool[Math.floor(Math.random() * pool.length)];
+ } else if (forcePool === 'dragongod+') {
+ const pool = DRAGONS.filter(d => ['dragongod', 'fiction', 'primordial', 'omnipotent', 'paragon'].includes(d.rarity));
+ return pool[Math.floor(Math.random() * pool.length)];
+ } else if (forcePool === 'rare+') {
+ const pool = DRAGONS.filter(d => ['rare', 'epic', 'legendary', 'heroic', 'godly', 'cosmic', 'unknown', 'founders', 'secret', 'dragongod', 'fiction', 'primordial', 'omnipotent', 'paragon'].includes(d.rarity));
+ return pool[Math.floor(Math.random() * pool.length)];
+ }
+
+ let chances = JSON.parse(JSON.stringify(RARITIES));
+ let luckBonus = state.luckBoost + getArtifactLuckBonus();
+ let rand = Math.random() * 100;
+ let cumulative = 0;
+ let selectedRarity = 'common';
+
+ chances.common.chance = Math.max(10, chances.common.chance - luckBonus);
+ chances.rare.chance += luckBonus * 0.4;
+ chances.epic.chance += luckBonus * 0.3;
+ chances.legendary.chance += luckBonus * 0.2;
+ chances.cosmic.chance += luckBonus * 0.08;
+ chances.unknown.chance += luckBonus * 0.02;
+
+ for (const [key, data] of Object.entries(chances)) {
+ cumulative += data.chance;
+ if (rand <= cumulative) {
+ selectedRarity = key;
+ break;
+ }
+ }
+
+ const pool = DRAGONS.filter(d => d.rarity === selectedRarity);
+ return pool[Math.floor(Math.random() * pool.length)];
+ }
+
+ function showReveal(dragon, variant = 'normal') {
+ const modal = document.getElementById('reveal-modal');
+ const card = document.getElementById('reveal-card');
+ const batchList = document.getElementById('batch-reveal-list');
+ const rarityData = RARITIES[dragon.rarity];
+ const elemData = ELEMENTS[dragon.element];
+
+ card.className = `reveal-card rarity-${dragon.rarity} variant-${variant} summon-reveal summon-reveal-${dragon.rarity}`;
+ if (batchList) { batchList.hidden = true; batchList.innerHTML = ''; }
+ document.getElementById('reveal-icon').textContent = `${DRAGON_VARIANTS[variant]?.icon || ''}${dragon.icon}`;
+ document.getElementById('reveal-rarity').textContent = rarityData.name;
+ document.getElementById('reveal-name').textContent = variant === 'normal' ? dragon.name : `${DRAGON_VARIANTS[variant].name} ${dragon.name}`;
+ 
+ const elemEl = document.getElementById('reveal-element');
+ if (dragon.secondaryElement) {
+ const secElemData = ELEMENTS[dragon.secondaryElement];
+ elemEl.textContent = `${elemData.icon} ${elemData.name} | ${secElemData.icon} ${secElemData.name}`;
+ elemEl.style.color = elemData.color;
+ } else {
+ elemEl.textContent = `${elemData.icon} ${elemData.name}`;
+ elemEl.style.color = elemData.color;
+ }
+
+ let elemMult = state.elementMultipliers[dragon.element] || 1.0;
+ if (dragon.secondaryElement) {
+ elemMult += (state.elementMultipliers[dragon.secondaryElement] || 1.0);
+ }
+
+ if (dragon.rarity === 'paragon') {
+ document.getElementById('reveal-cps').textContent = `+${(rarityData.gemPerSecond * elemMult).toLocaleString()} Gems/sec`;
+ } else if (dragon.rarity === 'exclusive') {
+ document.getElementById('reveal-cps').textContent = `+${formatCompactNumber(dragon.coinPerSecond)} Coins/sec | +${dragon.gemPerSecond} Gems/sec`;
+ } else {
+ document.getElementById('reveal-cps').textContent = `+${Math.floor(rarityData.cps * elemMult).toLocaleString()} Coins/sec`;
+ }
+
+ modal.classList.remove('hidden');
+ }
+
+ function showBatchReveal(dragons) {
+ const modal = document.getElementById('reveal-modal');
+ const card = document.getElementById('reveal-card');
+ const batchList = document.getElementById('batch-reveal-list');
+ if (!modal || !card || !batchList) return;
+ card.className = 'reveal-card rarity-rare summon-reveal summon-reveal-batch';
+ document.getElementById('reveal-icon').textContent = '🥚';
+ document.getElementById('reveal-rarity').textContent = `${dragons.length} DRAGONS SUMMONED`;
+ document.getElementById('reveal-name').textContent = 'Summon Results';
+ document.getElementById('reveal-element').textContent = 'Batch reveal complete';
+ document.getElementById('reveal-cps').textContent = 'Tap a result in your history for details';
+ batchList.hidden = false;
+ batchList.innerHTML = dragons.map((dragon, index) => `<div class="batch-reveal-item rarity-${dragon.rarity}" style="animation-delay: ${index * 45}ms"><div class="batch-reveal-item-icon">${dragon.icon}</div><div class="batch-reveal-item-name">${dragon.name}</div><div style="font-size: 8px; color: ${RARITIES[dragon.rarity].color};">${RARITIES[dragon.rarity].name}</div></div>`).join('');
+ modal.classList.remove('hidden');
+ }
+
+ function closeReveal() {
+ document.getElementById('reveal-modal').classList.add('hidden');
+ }
+
+ function openSellModal(dragon, event = null) {
+ const owned = state.ownedDragons[dragon.id] || 0;
+ if (owned <= 0) return;
+
+ if (dragon.rarity === 'primordial') {
+ playSound('primordial');
+ if (event) spawnEmojiParticles(dragon.particleEmoji || '💠', event.clientX, event.clientY);
+ } else if (dragon.rarity === 'fiction') {
+ playSound('fiction');
+ if (event) spawnEmojiParticles(dragon.particleEmoji || '✨', event.clientX, event.clientY);
+ } else if (dragon.rarity === 'dragongod') {
+ playSound(dragon.sound || 'god_all');
+ if (event) spawnEmojiParticles(dragon.particleEmoji || '⚡', event.clientX, event.clientY);
+ } else if (dragon.rarity === 'founders') playSound('founders');
+ else if (dragon.rarity === 'secret') playSound('secret');
+
+ activeSelectedDragon = dragon;
+ const rarityData = RARITIES[dragon.rarity];
+ const modal = document.getElementById('sell-modal');
+ const card = document.getElementById('sell-card');
+
+ const singleSellPrice = Math.floor(rarityData.sellValue * state.saleBonus * state.rebirthMultiplier * getDragonSkillSellMultiplier(dragon.id));
+ const evolveLevel = state.dragonEvolution[dragon.id] || 0;
+ const fusionLevel = state.dragonFusion[dragon.id] || 0;
+
+ card.className = `reveal-card rarity-${dragon.rarity}`;
+ const displayDragon = getDragonForm(dragon);
+ document.getElementById('sell-icon').textContent = displayDragon.icon;
+ document.getElementById('sell-rarity').textContent = rarityData.name;
+ document.getElementById('sell-name').textContent = `${displayDragon.name} ${evolveLevel > 0 ? `(Form ${evolveLevel}/10)` : ''}`.trim();
+ document.getElementById('sell-owned').textContent = `Owned: ${owned} | Form: ${evolveLevel}/10 | Fusion: ${fusionLevel}`;
+ 
+ document.getElementById('btn-sell-1').textContent = `Sell 1 (+${singleSellPrice.toLocaleString()})`;
+ document.getElementById('btn-sell-all').textContent = `Sell All (+${(singleSellPrice * owned).toLocaleString()})`;
+ document.getElementById('btn-evolve').textContent = evolveLevel >= 10 ? 'Final Form Reached' : `Evolve 3x (Form ${evolveLevel + 1}/10)`;
+ document.getElementById('btn-evolve').disabled = owned < 3 || evolveLevel >= 10;
+ document.getElementById('btn-evolve').style.opacity = owned < 3 || evolveLevel >= 10 ? '0.5' : '1';
+ document.getElementById('btn-fuse').textContent = `Fuse 5x (+${(fusionLevel + 1) * 100}% CPS)`;
+ document.getElementById('btn-fuse').disabled = owned < 5;
+ document.getElementById('btn-fuse').style.opacity = owned < 5 ? '0.5' : '1';
+
+ modal.classList.remove('hidden');
+ }
+
+ function closeSellModal() {
+ document.getElementById('sell-modal').classList.add('hidden');
+ activeSelectedDragon = null;
+ }
+
+ function evolveDragon() {
+ if (!activeSelectedDragon) return;
+
+ const dragon = activeSelectedDragon;
+ const owned = state.ownedDragons[dragon.id] || 0;
+ const currentStage = state.dragonEvolution[dragon.id] || 0;
+
+ if (currentStage >= EVOLUTION_FORMS.length) {
+  return alert(`${dragon.name} has reached its final form.`);
+ }
+ if (owned < 3) {
+ alert('You need 3 copies of this dragon to evolve it!');
+ return;
+ }
+
+ state.ownedDragons[dragon.id] -= 3;
+ state.dragonEvolution[dragon.id] = currentStage + 1;
+
+ playSound('godly');
+ checkAchievements();
+ saveGame();
+ updateUI();
+ renderCollection();
+ const evolvedCard = document.querySelector(`[data-dragon-id="${dragon.id}"]`);
+ if (evolvedCard) evolvedCard.classList.add('evolved');
+ openSellModal(dragon);
+ }
+
+ function getDragonEvolutionMultiplier(dragonId) {
+ const stage = Math.min(EVOLUTION_FORMS.length, state.dragonEvolution[dragonId] || 0);
+ return stage ? EVOLUTION_FORMS[stage - 1].incomeMultiplier : 1;
+ }
+
+ function getDragonForm(dragon) {
+ const stage = Math.min(EVOLUTION_FORMS.length, state.dragonEvolution[dragon.id] || 0);
+ if (!stage) return dragon;
+ const form = EVOLUTION_FORMS[stage - 1];
+ return { ...dragon, name: `${form.name} ${dragon.name}`, icon: form.icon };
+ }
+
+ function fuseDragon() {
+ if (!activeSelectedDragon) return;
+
+ const dragon = activeSelectedDragon;
+ const owned = state.ownedDragons[dragon.id] || 0;
+ const currentFusion = state.dragonFusion[dragon.id] || 0;
+
+ if (owned < 5) {
+ alert('You need 5 copies of this dragon to fuse it!');
+ return;
+ }
+
+ state.ownedDragons[dragon.id] -= 5;
+ state.dragonFusion[dragon.id] = currentFusion + 1;
+
+ playSound('founders');
+ checkAchievements();
+ saveGame();
+ updateUI();
+ renderCollection();
+ const fusedCard = document.querySelector(`[data-dragon-id="${dragon.id}"]`);
+ if (fusedCard) fusedCard.classList.add('fused', 'evolved');
+ openSellModal(dragon);
+ }
+
+ function getDragonFusionMultiplier(dragonId) {
+ const stage = state.dragonFusion[dragonId] || 0;
+ return 1 + stage;
+ }
+
+ function sellDragon(amountType) {
+ if (!activeSelectedDragon) return;
+
+ const dragon = activeSelectedDragon;
+ const owned = state.ownedDragons[dragon.id] || 0;
+ const rarityData = RARITIES[dragon.rarity];
+ const singleSellPrice = Math.floor(rarityData.sellValue * state.saleBonus * state.rebirthMultiplier * getDragonSkillSellMultiplier(dragon.id));
+
+ let countToSell = amountType === 'all' ? owned : 1;
+ if (countToSell <= 0) return;
+
+ state.ownedDragons[dragon.id] -= countToSell;
+ state.coins += singleSellPrice * countToSell;
+ state.stats.totalCoinsEarned += singleSellPrice * countToSell;
+
+ playSound('sell');
+ checkAchievements();
+ saveGame();
+ updateUI();
+ renderCollection();
+
+ if (state.ownedDragons[dragon.id] > 0 && amountType !== 'all') {
+ openSellModal(dragon);
+ } else {
+ closeSellModal();
+ }
+ }
+
+ function buyUpgrade(type) {
+ if (type === 'click' && state.coins >= state.clickUpgCost) {
+ state.coins -= state.clickUpgCost;
+ state.clickPower += 1;
+ state.clickUpgCost = Math.floor(state.clickUpgCost * 1.8);
+ playSound('tap');
+ } else if (type === 'nest' && state.coins >= state.nestUpgCost) {
+ state.coins -= state.nestUpgCost;
+ state.nestMultiplier += 0.15;
+ state.nestUpgCost = Math.floor(state.nestUpgCost * 2.2);
+ playSound('tap');
+ } else if (type === 'crit' && state.coins >= state.critUpgCost) {
+ state.coins -= state.critUpgCost;
+ state.critChance += 0.05;
+ state.critUpgCost = Math.floor(state.critUpgCost * 2.0);
+ playSound('tap');
+ } else if (type === 'auto' && state.coins >= state.autoUpgCost) {
+ state.coins -= state.autoUpgCost;
+ state.autoTappers += 1;
+ state.autoUpgCost = Math.floor(state.autoUpgCost * 2.5);
+ playSound('tap');
+ } else if (type === 'luck' && state.coins >= state.luckUpgCost) {
+ state.coins -= state.luckUpgCost;
+ state.luckBoost += 2;
+ state.luckUpgCost = Math.floor(state.luckUpgCost * 3.0);
+ playSound('tap');
+ } else if (type === 'gemfind' && state.coins >= state.gemFindUpgCost) {
+ state.coins -= state.gemFindUpgCost;
+ state.gemFindChance += 0.02;
+ state.gemFindUpgCost = Math.floor(state.gemFindUpgCost * 3.5);
+ playSound('tap');
+ } else if (type === 'saleboost' && state.coins >= state.saleBoostUpgCost) {
+ state.coins -= state.saleBoostUpgCost;
+ state.saleBonus += 0.10;
+ state.saleBoostUpgCost = Math.floor(state.saleBoostUpgCost * 4.0);
+ playSound('tap');
+ } else if (type === 'paragon' && state.coins >= state.paragonMasteryCost) {
+ state.coins -= state.paragonMasteryCost;
+ state.paragonMastery += 0.25;
+ state.paragonMasteryCost = Math.floor(state.paragonMasteryCost * 2.5);
+ playSound('founders');
+ } else {
+ return alert('Not enough coins!');
+ }
+ checkAchievements();
+ saveGame();
+ updateUI();
+ }
+
+ function buyElementUpgrade(elemKey) {
+ const cost = state.elementUpgCosts[elemKey];
+ if (state.coins >= cost) {
+ state.coins -= cost;
+ state.elementMultipliers[elemKey] = (state.elementMultipliers[elemKey] || 1.0) + 0.20;
+ state.elementUpgCosts[elemKey] = Math.floor(cost * 2.5);
+ playSound('tap');
+ checkAchievements();
+ saveGame();
+ updateUI();
+ } else {
+ alert('Not enough coins!');
+ }
+ }
+
+ function upgradeArtifact(artId) {
+ const art = ARTIFACTS.find(a => a.id === artId);
+ const currentLvl = state.artifacts[artId] || 0;
+ const costGems = Math.floor(art.baseCostGems * Math.pow(1.8, currentLvl));
+
+ if (state.gems >= costGems) {
+ state.gems -= costGems;
+ state.artifacts[artId] = currentLvl + 1;
+ playSound('founders');
+ checkAchievements();
+ saveGame();
+ updateUI();
+ renderArtifacts();
+ } else {
+ alert('Not enough Gems!');
+ }
+ }
+
+ function buyGems(amount, cost) {
+ if (state.coins >= cost) {
+ state.coins -= cost;
+ state.gems += amount;
+ playSound('tap');
+ checkAchievements();
+ saveGame();
+ updateUI();
+ } else {
+ alert('Not enough coins!');
+ }
+ }
+
+ function buyCosmetic(cosmeticId) {
+ const cosmetic = COSMETICS.find(item => item.id === cosmeticId);
+ if (!cosmetic) return;
+ if (cosmetic.adventureStage) return alert('This Exclusive Cosmetic is earned by clearing its Adventure stage.');
+ if (state.cosmeticsOwned.includes(cosmeticId)) {
+ return equipCosmetic(cosmeticId);
+ }
+ if (state.gems < cosmetic.price) {
+ alert('Not enough Gems!');
+ return;
+ }
+ state.gems -= cosmetic.price;
+ state.cosmeticsOwned.push(cosmeticId);
+ state.activeCosmetic = cosmeticId;
+ playSound('founders');
+ saveGame();
+ syncCosmeticVisuals();
+ renderCosmetics();
+ }
+
+ function equipCosmetic(cosmeticId) {
+ state.activeCosmetic = cosmeticId;
+ const chosen = COSMETICS.find(item => item.id === cosmeticId) || COSMETICS[0];
+ saveGame();
+ syncCosmeticVisuals();
+ renderCosmetics();
+ }
+
+ function syncCosmeticVisuals() {
+ const selectedSkin = COSMETICS.find(item => item.id === state.activeCosmetic) || COSMETICS[0];
+ const egg = document.getElementById('egg');
+ if (egg) egg.textContent = selectedSkin.egg;
+ if (egg) {
+  egg.className = `egg-icon cosmetic-${selectedSkin.id}`;
+ }
+ document.documentElement.style.setProperty('--accent', selectedSkin.accent);
+ document.querySelector('.mobile-container')?.style.setProperty('background-color', selectedSkin.background);
+ }
+
+ function renderCosmetics() {
+ const list = document.getElementById('cosmetics-list');
+ if (!list) return;
+ list.innerHTML = '';
+
+ const ownedCount = COSMETICS.filter(item => state.cosmeticsOwned.includes(item.id)).length;
+ const progress = document.getElementById('cosmetic-progress');
+ if (progress) progress.textContent = `${ownedCount} / ${COSMETICS.length} collected`;
+
+ COSMETICS.forEach(item => {
+ const owned = state.cosmeticsOwned.includes(item.id);
+ const selected = state.activeCosmetic === item.id;
+ const row = document.createElement('div');
+ row.className = 'shop-item';
+ row.innerHTML = `
+ <div class="item-info">
+ <span class="item-title">${item.egg} ${item.name}</span>
+ <span class="item-desc" style="color: ${item.accent};">${item.tier} · x${item.multiplier} boost · ${selected ? 'Equipped' : owned ? 'Owned' : item.adventureStage ? `Clear Adventure Stage ${item.adventureStage}` : `${item.price} Gems`}</span>
+ </div>
+ <button class="btn ${selected ? 'btn-gold' : owned ? 'btn-purple' : item.adventureStage ? 'btn-disabled' : 'btn-purple'}" onclick="${owned ? `equipCosmetic('${item.id}')` : item.adventureStage ? '' : `buyCosmetic('${item.id}')`}" ${!owned && item.adventureStage ? 'disabled' : ''}>
+ ${selected ? 'Equipped' : owned ? 'Equip' : item.adventureStage ? 'Adventure Reward' : 'Buy'}
+ </button>
+ `;
+ list.appendChild(row);
+ });
+ }
+
+ function buyElixir() {
+ if (state.coins >= 250) {
+ state.coins -= 250;
+ state.elixirTimer = 30;
+ playSound('tap');
+ saveGame();
+ updateUI();
+ } else {
+ alert('Not enough coins!');
+ }
+ }
+
+ function buySuperElixir() {
+ if (state.coins >= 1500) {
+ state.coins -= 1500;
+ state.superElixirTimer = 15;
+ playSound('tap');
+ saveGame();
+ updateUI();
+ } else {
+ alert('Not enough coins!');
+ }
+ }
+
+ function buyGoldenEgg() {
+ if (state.gems >= 1000) {
+ state.gems -= 1000;
+ summon(1, 'legendary+');
+ } else {
+ alert('Not enough Gems!');
+ }
+ }
+
+ function buyVoidEgg() {
+ if (state.gems >= 5000) {
+ state.gems -= 5000;
+ summon(1, 'godly+');
+ } else {
+ alert('Not enough Gems!');
+ }
+ }
+
+ function buyUnknownEgg() {
+ if (state.gems >= 10000) {
+ state.gems -= 10000;
+ summon(1, 'unknown+');
+ } else {
+ alert('Not enough Gems!');
+ }
+ }
+
+ function buyDragonGodEgg() {
+ if (state.gems >= 25000) {
+ state.gems -= 25000;
+ summon(1, 'dragongod+');
+ } else {
+ alert('Not enough Gems!');
+ }
+ }
+
+ function getDragonSkillLevels(dragonId) {
+ if (!state.dragonSkills[dragonId]) state.dragonSkills[dragonId] = {};
+ return state.dragonSkills[dragonId];
+ }
+
+ function getDragonSkillPowerMultiplier(dragonId) {
+ const skills = getDragonSkillLevels(dragonId);
+ const evolution = EVOLUTION_FORMS[Math.min(EVOLUTION_FORMS.length, state.dragonEvolution[dragonId] || 0) - 1];
+ return (1 + (skills.might || 0) * 0.10) * (evolution?.skillMultiplier || 1);
+ }
+
+ function getDragonSkillAffinityBonus(dragonId) {
+ const skills = getDragonSkillLevels(dragonId);
+ return (skills.resonance || 0) * 0.10;
+ }
+
+ function getDragonSkillSellMultiplier(dragonId) {
+ const skills = getDragonSkillLevels(dragonId);
+ return 1 + (getDragonSkillLevels(dragonId).hoard || 0) * 0.25;
+ }
+
+ function getDragonSkillDefinitions(dragon) {
+ const rarityData = RARITIES[dragon.rarity];
+ const baseCost = Math.max(100, Math.floor((rarityData.sellValue || 500) * 2));
+ const formLevel = Math.min(EVOLUTION_FORMS.length, state.dragonEvolution[dragon.id] || 0);
+ const form = formLevel ? EVOLUTION_FORMS[formLevel - 1] : null;
+ return [
+  { id: 'might', name: 'Dragon Might', icon: '⚔️', max: 500, description: `+10% CPS and GPS per level${form ? ` · ${form.name} form skill effect x${form.skillMultiplier}` : ''}`, cost: baseCost, requires: null },
+  { id: 'resonance', name: `${ELEMENTS[dragon.element].name} Resonance`, icon: ELEMENTS[dragon.element].icon, max: 500, description: '+10% elemental affinity per level', cost: baseCost * 2, requires: { id: 'might', level: 1 } },
+  { id: 'hoard', name: 'Ancient Hoard', icon: '💰', max: 500, description: '+25% sell value per level', cost: baseCost * 3, requires: { id: 'resonance', level: 1 } }
+ ];
+ }
+
+ function buyDragonSkill(dragonId, skillId) {
+ const dragon = DRAGONS.find(item => item.id === dragonId);
+ if (!dragon || (state.ownedDragons[dragonId] || 0) < 1) return alert('You must own this dragon first.');
+ const skill = getDragonSkillDefinitions(dragon).find(item => item.id === skillId);
+ const levels = getDragonSkillLevels(dragonId);
+ if (!skill || (levels[skill.id] || 0) >= skill.max) return;
+ if (skill.requires && (levels[skill.requires.id] || 0) < skill.requires.level) return alert(`Unlock ${skill.requires.id} first.`);
+ const level = levels[skill.id] || 0;
+ const cost = Math.floor(skill.cost * Math.pow(1.025, level));
+ if (state.coins < cost) return alert('Not enough Coins!');
+ state.coins -= cost;
+ levels[skill.id] = level + 1;
+ saveGame();
+ renderDragonSkillTree();
+ updateUI();
+ }
+
+ function renderDragonSkillTree() {
+ const select = document.getElementById('skill-dragon-select');
+ const container = document.getElementById('dragon-skill-tree');
+ const summary = document.getElementById('skill-dragon-summary');
+ if (!select || !container) return;
+ const dragon = DRAGONS.find(item => item.id === select.value);
+ if (!dragon) {
+  if (summary) summary.innerHTML = '<div class="item-info"><span class="item-title">No dragon selected</span><span class="item-desc">Adjust the search or ownership filter.</span></div>';
+  container.innerHTML = '';
+  return;
+ }
+ const owned = state.ownedDragons[dragon.id] || 0;
+ const levels = getDragonSkillLevels(dragon.id);
+ const rarityData = RARITIES[dragon.rarity];
+ if (summary) summary.innerHTML = `<div class="item-info"><span class="item-title" style="color: ${rarityData.color};">${dragon.icon} ${dragon.name}</span><span class="item-desc">${rarityData.name} · Owned: ${owned} · Skill levels: ${Object.values(levels).reduce((total, level) => total + level, 0)}</span></div>`;
+ container.innerHTML = getDragonSkillDefinitions(dragon).map(skill => {
+  const level = levels[skill.id] || 0;
+  const requirementMet = !skill.requires || (levels[skill.requires.id] || 0) >= skill.requires.level;
+  const available = owned > 0 && requirementMet && level < skill.max;
+  const cost = Math.floor(skill.cost * Math.pow(1.025, level));
+  const status = level >= skill.max ? 'Maxed' : !requirementMet ? `Requires ${skill.requires.id} I` : `${cost.toLocaleString()} Coins`;
+  return `<div class="skill-node ${available ? '' : 'locked'}"><div class="skill-node-header"><strong>${skill.icon} ${skill.name}</strong><span>Lvl ${level}/${skill.max}</span></div><div class="item-desc">${skill.description}</div><button class="btn ${available ? 'btn-gold' : 'btn-disabled'}" onclick="buyDragonSkill('${dragon.id}', '${skill.id}')" ${available ? '' : 'disabled'}>${status}</button></div>`;
+ }).join('');
+ }
+
+ function renderDragonSkillSelector() {
+ const select = document.getElementById('skill-dragon-select');
+ if (!select) return;
+ const search = (document.getElementById('skill-dragon-search')?.value || '').trim().toLowerCase();
+ const ownedOnly = document.getElementById('skill-owned-only')?.checked || false;
+ const selectedId = select.value;
+ const matches = DRAGONS.filter(dragon => {
+  const rarityName = RARITIES[dragon.rarity].name.toLowerCase();
+  const elementName = ELEMENTS[dragon.element].name.toLowerCase();
+  const matchesSearch = !search || `${dragon.name} ${rarityName} ${elementName}`.toLowerCase().includes(search);
+  const matchesOwnership = !ownedOnly || (state.ownedDragons[dragon.id] || 0) > 0;
+  return matchesSearch && matchesOwnership;
+ });
+ const groupedOptions = Object.entries(RARITIES).map(([rarityId, rarity]) => {
+  const dragons = matches.filter(dragon => dragon.rarity === rarityId);
+  if (!dragons.length) return '';
+  return `<optgroup label="${rarity.name}">${dragons.map(dragon => `<option value="${dragon.id}">${dragon.icon} ${dragon.name} · x${state.ownedDragons[dragon.id] || 0}</option>`).join('')}</optgroup>`;
+ }).join('');
+ select.innerHTML = groupedOptions || '<option value="" disabled>No dragons match this filter</option>';
+ if (matches.some(dragon => dragon.id === selectedId)) select.value = selectedId;
+ else if (matches.length) select.value = matches[0].id;
+ renderDragonSkillTree();
+ }
+
+ function switchTab(tab, event) {
+ document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+ document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+
+ const selectedButton = event && (event.currentTarget || event.target);
+ if (selectedButton) {
+ selectedButton.classList.add('active');
+ selectedButton.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+ }
+ document.getElementById(`view-${tab}`).classList.add('active');
+ }
+
+ function getDragonInventoryStats(dragon) {
+ const rarityData = RARITIES[dragon.rarity];
+ const variantPower = getDragonVariantPower(dragon.id);
+ let affinityMultiplier = state.elementMultipliers[dragon.element] || 1.0;
+ if (dragon.secondaryElement) affinityMultiplier += state.elementMultipliers[dragon.secondaryElement] || 1.0;
+ affinityMultiplier += getDragonSkillAffinityBonus(dragon.id);
+
+ const dragonMultiplier = affinityMultiplier *
+  getDragonEvolutionMultiplier(dragon.id) *
+  getDragonFusionMultiplier(dragon.id) *
+  getDragonSkillPowerMultiplier(dragon.id);
+ const selectedSkin = COSMETICS.find(item => item.id === state.activeCosmetic) || COSMETICS[0];
+ const coinRate = (dragon.rarity === 'exclusive' || dragon.rarity === 'adventure') ? (dragon.coinPerSecond || 0) : (rarityData.cps || 0);
+ const gemRate = (dragon.rarity === 'exclusive' || dragon.rarity === 'adventure') ? (dragon.gemPerSecond || 0) : (dragon.rarity === 'paragon' ? (rarityData.gemPerSecond || 0) : 0);
+ const coinBoost = state.nestMultiplier * state.rebirthMultiplier * getArtifactCPSMultiplier() * selectedSkin.multiplier;
+ const gemBoost = state.rebirthMultiplier * state.paragonMastery * getArtifactGemMultiplier() * selectedSkin.multiplier;
+ const temporaryCoinBoost = state.superElixirTimer > 0 ? 5 : (state.elixirTimer > 0 ? 2 : 1);
+ const sellPrice = Math.floor(rarityData.sellValue * state.saleBonus * state.rebirthMultiplier * getDragonSkillSellMultiplier(dragon.id));
+ const ownedCopies = state.ownedDragons[dragon.id] || 0;
+ const cps = Math.floor(variantPower * coinRate * dragonMultiplier * coinBoost * temporaryCoinBoost);
+ const gps = variantPower * gemRate * dragonMultiplier * gemBoost;
+ const rarityDamageMultiplier = 1 + (Object.keys(RARITIES).indexOf(dragon.rarity) * 0.08);
+ const totalCopies = getDragonTotalCopies(dragon.id);
+ const damage = totalCopies > 0
+  ? Math.floor((dragon.damage || (cps + (gps * 25) + (state.clickPower * Math.max(1, variantPower)))) * rarityDamageMultiplier)
+  : 0;
+
+ return {
+  cps,
+  gps,
+  damage,
+  totalDamage: damage * totalCopies,
+  sellPrice,
+  sellAllValue: sellPrice * ownedCopies
+ };
+ }
+
+ function calculateTotalDragonDamage() {
+  return DRAGONS.reduce((total, dragon) => total + getDragonInventoryStats(dragon).totalDamage, 0);
+ }
+
+ function renderCollection() {
+ const grid = document.getElementById('dragon-collection');
+ const summary = document.getElementById('dragon-inventory-summary');
+ if (!grid) return;
+ const elementSelect = document.getElementById('inventory-element-filter');
+ if (elementSelect && elementSelect.options.length === 1) {
+  Object.entries(ELEMENTS).forEach(([id, element]) => elementSelect.insertAdjacentHTML('beforeend', `<option value="${id}">${element.icon} ${element.name}</option>`));
+ }
+ grid.innerHTML = '';
+
+ const totalDragons = DRAGONS.reduce((total, dragon) => total + getDragonTotalCopies(dragon.id), 0);
+ const unlockedDragons = DRAGONS.filter(dragon => getDragonTotalCopies(dragon.id) > 0).length;
+ if (summary) summary.textContent = `Total Dragons: ${totalDragons.toLocaleString()} | Unlocked: ${unlockedDragons} / ${DRAGONS.length}`;
+
+ const search = (document.getElementById('inventory-search')?.value || '').trim().toLowerCase();
+ const rarityFilter = document.getElementById('inventory-rarity-filter')?.value || 'all';
+ const elementFilter = document.getElementById('inventory-element-filter')?.value || 'all';
+ const ownedOnly = document.getElementById('inventory-owned-only')?.checked || false;
+ const sort = document.getElementById('inventory-sort')?.value || 'rarity';
+ const rarityOrder = Object.keys(RARITIES);
+ const matchesFilter = dragon => {
+  const rarityIndex = rarityOrder.indexOf(dragon.rarity);
+  const rarityMatches = rarityFilter === 'all' || (rarityFilter === 'common' ? dragon.rarity === 'common' : rarityFilter === 'rare' ? rarityIndex >= rarityOrder.indexOf('rare') : rarityFilter === 'legendary' ? rarityIndex >= rarityOrder.indexOf('legendary') : rarityFilter === 'adventure' ? dragon.rarity === 'adventure' : dragon.rarity === 'exclusive');
+  const searchMatches = !search || `${dragon.name} ${dragon.rarity} ${dragon.element}`.toLowerCase().includes(search);
+  return rarityMatches && (elementFilter === 'all' || dragon.element === elementFilter || dragon.secondaryElement === elementFilter) && (!ownedOnly || getDragonTotalCopies(dragon.id) > 0) && searchMatches;
+ };
+ const filteredDragons = DRAGONS.filter(matchesFilter);
+ if (sort !== 'rarity') filteredDragons.sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : sort === 'owned' ? getDragonTotalCopies(b.id) - getDragonTotalCopies(a.id) : getDragonInventoryStats(b).cps - getDragonInventoryStats(a).cps);
+
+ Object.entries(RARITIES).forEach(([rarityId, rarity]) => {
+ const rarityDragons = filteredDragons.filter(dragon => dragon.rarity === rarityId);
+ if (rarityDragons.length === 0) return;
+
+ const rarityHeader = document.createElement('div');
+ rarityHeader.className = 'inventory-rarity-header';
+ rarityHeader.style.setProperty('--rarity-color', rarity.color);
+ const unlockedInRarity = rarityDragons.filter(dragon => getDragonTotalCopies(dragon.id) > 0).length;
+ rarityHeader.innerHTML = `<span class="inventory-rarity-name">${rarity.name}</span><span class="inventory-rarity-count">${unlockedInRarity} / ${rarityDragons.length} unlocked</span>`;
+ grid.appendChild(rarityHeader);
+
+ rarityDragons.forEach(d => {
+  const displayDragon = getDragonForm(d);
+  const count = state.ownedDragons[d.id] || 0;
+  const elemData = ELEMENTS[d.element];
+  const evolutionLevel = state.dragonEvolution[d.id] || 0;
+  const fusionLevel = state.dragonFusion[d.id] || 0;
+  const inventoryStats = getDragonInventoryStats(d);
+  const variantCounts = Object.keys(DRAGON_VARIANTS).map(variant => `${DRAGON_VARIANTS[variant].icon || '•'}${getDragonVariantCount(d.id, variant)}`).join(' ');
+  const variantButtons = [['normal', 'shiny'], ['shiny', 'gold'], ['gold', 'diamond']].filter(([from]) => getDragonVariantCount(d.id, from) >= 3).map(([from, to]) => `<button class="btn btn-gold" onclick="event.stopPropagation(); combineDragonVariant('${d.id}', '${from}', '${to}')">3 ${DRAGON_VARIANTS[from].name} → ${DRAGON_VARIANTS[to].icon}</button>`).join('');
+  const card = document.createElement('div');
+  card.className = `dragon-card rarity-${d.rarity}`;
+  card.dataset.dragonId = d.id;
+  if (evolutionLevel > 0) card.classList.add('evolved');
+  card.style.opacity = getDragonTotalCopies(d.id) > 0 ? '1' : '0.45';
+
+  if (getDragonTotalCopies(d.id) > 0) {
+  card.onclick = (e) => openSellModal(d, e);
+  }
+
+  let elemText = `${elemData.icon} ${elemData.name}`;
+  if (d.secondaryElement) {
+  const secElemData = ELEMENTS[d.secondaryElement];
+  elemText += ` | ${secElemData.icon} ${secElemData.name}`;
+  }
+
+  card.innerHTML = `
+  <div class="dragon-icon">${displayDragon.icon}</div>
+  <div class="dragon-name">${displayDragon.name}</div>
+  <div class="dragon-elem" style="color: ${elemData.color}">${elemText}</div>
+  <div class="dragon-count"><strong>x${count}</strong> owned</div>
+  <div class="dragon-income">
+  <div class="dragon-income-stat"><span class="dragon-income-label">CPS</span><span class="dragon-income-value">+${formatCompactNumber(inventoryStats.cps)}</span></div>
+  <div class="dragon-income-stat"><span class="dragon-income-label">GPS</span><span class="dragon-income-value">+${formatCompactNumber(inventoryStats.gps)}</span></div>
+  <div class="dragon-income-stat"><span class="dragon-income-label">DMG</span><span class="dragon-income-value" style="color: var(--godly);">⚔️ ${formatCompactNumber(inventoryStats.damage)}</span></div>
+  <div class="dragon-income-stat"><span class="dragon-income-label">Sell</span><span class="dragon-income-value">${formatCompactNumber(inventoryStats.sellPrice)} ea</span></div>
+  </div>
+  ${getDragonTotalCopies(d.id) > 0 ? `<div class="dragon-count">Form ${evolutionLevel}/10 - Fuse ${fusionLevel}</div><div class="dragon-count">Variants: ${variantCounts}</div><div style="display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px;">${variantButtons}</div>` : '<div class="dragon-locked">Not unlocked</div>'}
+  ${getDragonTotalCopies(d.id) > 0 ? `<div class="dragon-count" style="color: var(--gold);">Sell all: ${formatCompactNumber(inventoryStats.sellAllValue)}</div>` : ''}
+  `;
+  grid.appendChild(card);
+ });
+ });
+ renderAdventure();
+ }
+
+ function renderArtifacts() {
+ const container = document.getElementById('artifacts-list');
+ if (!container) return;
+ container.innerHTML = '';
+
+ ARTIFACTS.forEach(art => {
+ const currentLvl = state.artifacts[art.id] || 0;
+ const costGems = Math.floor(art.baseCostGems * Math.pow(1.8, currentLvl));
+
+ const div = document.createElement('div');
+ div.className = 'artifact-item';
+ div.innerHTML = `
+ <div style="font-size: 28px; margin-right: 8px;">${art.icon}</div>
+ <div class="item-info" style="flex-grow: 1;">
+ <span class="item-title">${art.name} <span style="color: var(--accent);">[Lvl ${currentLvl}]</span></span>
+ <span class="item-desc">${art.desc}</span>
+ </div>
+ <button class="btn btn-gold" onclick="upgradeArtifact('${art.id}')">
+ Upgrade<br>(${costGems} Gems)
+ </button>
+ `;
+ container.appendChild(div);
+ });
+ }
+
+ function checkAchievements() {
+ ACHIEVEMENTS.forEach(ach => {
+ if (!state.unlockedAchievements[ach.id] && ach.check(state)) {
+ state.unlockedAchievements[ach.id] = true;
+ state.gems += ach.rewardGems;
+ playSound('founders');
+ }
+ });
+ renderAchievements();
+ }
+
+ function renderAchievements() {
+ const container = document.getElementById('achievements-list');
+ if (!container) return;
+ container.innerHTML = '';
+
+ ACHIEVEMENTS.forEach(ach => {
+ const isCompleted = !!state.unlockedAchievements[ach.id];
+ const div = document.createElement('div');
+ div.className = `achievement-item ${isCompleted ? 'completed' : ''}`;
+ div.innerHTML = `
+ <div class="item-info">
+ <span class="item-title">${ach.title}</span>
+ <span class="item-desc">${ach.desc}</span>
+ </div>
+ <button class="btn ${isCompleted ? 'btn-disabled' : 'btn-gold'}">
+ ${isCompleted ? 'Unlocked! ✓' : '+' + ach.rewardGems + ' Gems'}
+ </button>
+ `;
+ container.appendChild(div);
+ });
+ }
+
+ function renderStatisticsDashboard() {
+  const dashboard = document.getElementById('statistics-dashboard');
+  if (!dashboard) return;
+  const unique = DRAGONS.filter(dragon => getDragonTotalCopies(dragon.id) > 0).length;
+  const totalCopies = DRAGONS.reduce((total, dragon) => total + getDragonTotalCopies(dragon.id), 0);
+  const bestDragon = DRAGONS.map(dragon => ({ dragon, stats: getDragonInventoryStats(dragon) })).sort((a, b) => b.stats.cps - a.stats.cps)[0];
+  const rows = [
+   ['Total coins earned', formatCompactNumber(state.stats.totalCoinsEarned)],
+   ['Unique dragons', `${unique} / ${DRAGONS.length}`],
+   ['Dragon copies', totalCopies.toLocaleString()],
+   ['Current CPS', formatCompactNumber(calculateCPS())],
+   ['Current GPS', formatCompactNumber(calculateGPS())],
+   ['Best CPS dragon', bestDragon?.dragon.name || 'None'],
+   ['Daily streak', `${state.dailyBonus?.streak || 0} days`],
+   ['Dragon team damage', formatCompactNumber(calculateTotalDragonDamage())],
+   ['Boss raid damage', formatCompactNumber(state.adventure?.bossDamage || 0)]
+  ];
+  dashboard.innerHTML = rows.map(([label, value]) => `<div style="padding: 7px; border: 1px solid #334155; border-radius: 6px; background: #111827;"><span style="display: block; color: #94a3b8; font-size: 9px;">${label}</span><strong style="color: var(--accent);">${value}</strong></div>`).join('');
+ }
+
+ function updateUI() {
+ const questDate = state.dailyQuests?.date;
+ ensureDailyQuests();
+ if (questDate !== state.dailyQuests.date) renderDailyQuests();
+ document.getElementById('coins-val').textContent = formatCompactNumber(state.coins);
+ document.getElementById('gems-val').textContent = formatCompactNumber(state.gems);
+ document.getElementById('tokens-val').textContent = formatCompactNumber(state.rebirthTokens);
+ document.getElementById('cps-val').textContent = formatCompactNumber(calculateCPS());
+ document.getElementById('gps-val').textContent = formatCompactNumber(calculateGPS());
+ const pityStatus = document.getElementById('pity-status');
+ if (pityStatus) pityStatus.textContent = `Rare pity: ${state.pity.rare || 0} / 10 · Legendary pity: ${state.pity.legendary || 0} / 50`;
+ const rarePityFill = document.getElementById('pity-rare-fill');
+ const legendaryPityFill = document.getElementById('pity-legendary-fill');
+ if (rarePityFill) rarePityFill.style.width = `${Math.min(100, ((state.pity.rare || 0) / 10) * 100)}%`;
+ if (legendaryPityFill) legendaryPityFill.style.width = `${Math.min(100, ((state.pity.legendary || 0) / 50) * 100)}%`;
+
+ syncCosmeticVisuals();
+
+ const dailyButton = document.getElementById('daily-bonus-btn');
+ const dailyStatus = document.getElementById('daily-bonus-status');
+ const today = getDateKey();
+ const streak = state.dailyBonus?.streak || 0;
+ const bonusReady = (state.dailyBonus?.lastClaimDate || null) !== today;
+ const nextRewardCoins = 250 + ((streak || 1) * 100);
+ const nextRewardGems = 10 + ((streak || 1) * 5);
+
+ if (dailyButton && dailyStatus) {
+ if (bonusReady) {
+ dailyStatus.textContent = `Daily bonus ready: +${nextRewardCoins.toLocaleString()} Coins and +${nextRewardGems} Gems`;
+ dailyButton.textContent = 'Claim';
+ dailyButton.disabled = false;
+ dailyButton.classList.remove('btn-disabled');
+ } else {
+ dailyStatus.textContent = `Claimed today • streak ${streak} day(s)`;
+ dailyButton.textContent = 'Claimed';
+ dailyButton.disabled = true;
+ dailyButton.classList.add('btn-disabled');
+ }
+ }
+ // Rebirth & Title UI Updates
+ const rebirthInfo = getRebirthInfo(state.rebirths);
+ document.getElementById('player-title').textContent = rebirthInfo.title;
+ document.getElementById('player-badge').textContent = rebirthInfo.badge;
+ document.getElementById('player-rebirths').textContent = `Rebirths: ${state.rebirths}`;
+
+ document.getElementById('prof-title').textContent = rebirthInfo.title;
+ document.getElementById('prof-badge').textContent = rebirthInfo.badge;
+ document.getElementById('prof-taps').textContent = state.stats.totalTaps.toLocaleString();
+ document.getElementById('prof-summons').textContent = state.stats.totalSummons.toLocaleString();
+ document.getElementById('prof-rebirths').textContent = state.rebirths;
+
+ const ownedFoundersCount = DRAGONS.filter(d => d.rarity === 'founders' && state.ownedDragons[d.id] > 0).length;
+ const ownedSecretsCount = DRAGONS.filter(d => d.rarity === 'secret' && state.ownedDragons[d.id] > 0).length;
+ const ownedDragonGodsCount = DRAGONS.filter(d => d.rarity === 'dragongod' && state.ownedDragons[d.id] > 0).length;
+ const ownedFictionCount = DRAGONS.filter(d => d.rarity === 'fiction' && state.ownedDragons[d.id] > 0).length;
+ const ownedPrimordialCount = DRAGONS.filter(d => d.rarity === 'primordial' && state.ownedDragons[d.id] > 0).length;
+ const ownedParagonCount = DRAGONS.filter(d => d.rarity === 'paragon' && state.ownedDragons[d.id] > 0).length;
+ 
+ document.getElementById('prof-founders').textContent = `${ownedFoundersCount} / 5`;
+ document.getElementById('prof-secrets').textContent = `${ownedSecretsCount} / 3`;
+ document.getElementById('prof-dragongods').textContent = `${ownedDragonGodsCount} / 7`;
+ document.getElementById('prof-fiction').textContent = `${ownedFictionCount} / 4`;
+ document.getElementById('prof-primordial').textContent = `${ownedPrimordialCount} / 3`;
+ document.getElementById('prof-paragon').textContent = `${ownedParagonCount} / 5`;
+
+ // Upgrades UI
+ const reqRebirthCoins = 1000000 * Math.pow(2, state.rebirths);
+ const rebirthBoostPercent = Math.round((state.rebirthMultiplier - 1) * 100);
+ document.getElementById('rebirth-desc').textContent = `Reset coins, gems, dragons & upgrades for +100% per rebirth (Current: +${rebirthBoostPercent}% boost; Tokens kept) (Req: ${reqRebirthCoins.toLocaleString()} Coins)`;
+
+ Object.keys(ELEMENTS).forEach(key => {
+ const mult = state.elementMultipliers[key] || 1.0;
+ const cost = state.elementUpgCosts[key];
+ document.getElementById(`upg-elem-${key}-desc`).textContent = `Current: x${mult.toFixed(1)} CPS Boost`;
+ document.getElementById(`btn-elem-${key}`).textContent = `${cost.toLocaleString()} Coins`;
+ });
+
+ const totalClick = state.clickPower + getArtifactClickPower();
+ document.getElementById('upg-click-desc').textContent = `Get +${totalClick + 1} coins per tap`;
+ document.getElementById('btn-upg-click').textContent = `${state.clickUpgCost.toLocaleString()} Coins`;
+
+ document.getElementById('upg-nest-desc').textContent = `Boosts Dragon CPS by +${Math.round((state.nestMultiplier + 0.15 - 1) * 100)}%`;
+ document.getElementById('btn-upg-nest').textContent = `${state.nestUpgCost.toLocaleString()} Coins`;
+
+ document.getElementById('upg-crit-desc').textContent = `Current: ${Math.round(state.critChance * 100)}% chance for 5x Crit`;
+ document.getElementById('btn-upg-crit').textContent = `${state.critUpgCost.toLocaleString()} Coins`;
+
+ document.getElementById('upg-auto-desc').textContent = `Current: ${state.autoTappers} auto-taps/sec`;
+ document.getElementById('btn-upg-auto').textContent = `${state.autoUpgCost.toLocaleString()} Coins`;
+
+ const totalLuck = state.luckBoost + getArtifactLuckBonus();
+ document.getElementById('upg-luck-desc').textContent = `Current: +${totalLuck}% Luck Bonus`;
+ document.getElementById('btn-upg-luck').textContent = `${state.luckUpgCost.toLocaleString()} Coins`;
+
+ document.getElementById('upg-gemfind-desc').textContent = `Current: ${Math.round(state.gemFindChance * 100)}% chance for +1 Gem/tap`;
+ document.getElementById('btn-upg-gemfind').textContent = `${state.gemFindUpgCost.toLocaleString()} Coins`;
+
+ document.getElementById('upg-saleboost-desc').textContent = `Current: +${Math.round((state.saleBonus - 1) * 100)}% sell price bonus`;
+ document.getElementById('btn-upg-saleboost').textContent = `${state.saleBoostUpgCost.toLocaleString()} Coins`;
+ document.getElementById('upg-paragon-desc').textContent = `Current: x${state.paragonMastery.toFixed(2)} Paragon GPS`;
+ document.getElementById('btn-upg-paragon').textContent = `${state.paragonMasteryCost.toLocaleString()} Coins`;
+
+ const statusEl = document.getElementById('boost-status');
+ if (state.superElixirTimer > 0) {
+ statusEl.textContent = `⚡ Super Rush Active! 5x CPS (${Math.ceil(state.superElixirTimer)}s)`;
+ statusEl.style.color = 'var(--unknown)';
+ } else if (state.elixirTimer > 0) {
+ statusEl.textContent = `🧪 Elixir Active! 2x CPS (${Math.ceil(state.elixirTimer)}s)`;
+ statusEl.style.color = 'var(--gold)';
+ } else {
+ statusEl.textContent = 'Tap egg for coins!';
+ statusEl.style.color = '#94a3b8';
+ }
+ }
+
+ setInterval(() => {
+ saveGame();
+ }, 5000);
+
+ setInterval(() => {
+ renderSeasonalEvent();
+ }, 1000);
+
+ setInterval(() => {
+ const gainedCoins = calculateCPS() / 10;
+ state.coins += gainedCoins;
+ state.stats.totalCoinsEarned += gainedCoins;
+ recordQuestProgress('coins', gainedCoins);
+
+ paragonGemProgress += calculateGPS() / 10;
+ const earnedParagonGems = Math.floor(paragonGemProgress);
+ if (earnedParagonGems > 0) {
+  state.gems += earnedParagonGems;
+  paragonGemProgress -= earnedParagonGems;
+ }
+
+ if (state.autoTappers > 0) {
+ const totalClickPower = state.clickPower + getArtifactClickPower();
+ const tapGains = (state.autoTappers * totalClickPower * state.rebirthMultiplier) / 10;
+ state.coins += tapGains;
+ state.stats.totalCoinsEarned += tapGains;
+ recordQuestProgress('coins', tapGains);
+ }
+
+ if (state.superElixirTimer > 0) {
+ state.superElixirTimer = Math.max(0, state.superElixirTimer - 0.1);
+ } else if (state.elixirTimer > 0) {
+ state.elixirTimer = Math.max(0, state.elixirTimer - 0.1);
+ }
+
+ checkAchievements();
+ updateUI();
+ }, 100);
+
+ loadGame();
+ renderAdventure();
+ renderDragonSkillSelector();
+ renderCollection();
+ renderSummonHistory();
+ renderArtifacts();
+ renderAchievements();
+ renderDailyQuests();
+ renderStatisticsDashboard();
+ renderCosmetics();
+ renderSummonTickets();
+ renderSeasonalEvent();
+ renderExclusiveDragons();
+ updateUI();
+ </script>
+</body>
+</html>
